@@ -14,6 +14,7 @@ import {
   X,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import avatarAsset from "@/assets/avatar.jpg.asset.json";
 
 const NAV = [
   { id: "about", label: "About" },
@@ -270,9 +271,13 @@ export default function Portfolio() {
                 transition={{ type: "spring", stiffness: 260, damping: 20 }}
                 className="group relative shrink-0"
               >
-                <div className="absolute -inset-1 rounded-full bg-primary/20 opacity-0 blur-md transition-opacity duration-300 group-hover:opacity-100" />
-                <div className="relative grid h-24 w-24 place-items-center rounded-full border border-border bg-gradient-to-br from-primary/20 to-primary/5 text-2xl font-semibold tracking-tight sm:h-28 sm:w-28">
-                  AM
+                <div className="absolute -inset-1 rounded-full bg-primary/30 opacity-0 blur-md transition-opacity duration-300 group-hover:opacity-100" />
+                <div className="relative h-24 w-24 overflow-hidden rounded-full border border-border ring-2 ring-transparent transition-all duration-300 group-hover:ring-primary/40 sm:h-28 sm:w-28">
+                  <img
+                    src={avatarAsset.url}
+                    alt="Aysha Mehek"
+                    className="h-full w-full object-cover"
+                  />
                 </div>
               </motion.div>
               <div className="min-w-0">
