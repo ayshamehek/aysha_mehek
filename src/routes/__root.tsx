@@ -88,17 +88,20 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       {
         property: "og:description",
         content:
-          "Aspiring Data Analyst & Data Scientist. Turning data into decisions.",
+          "BCA graduate and Data Science Intern at MSDC Manipal. Python, SQL, Machine Learning, Analytics and Data Visualization. Based in Karnataka, India.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:title", content: "Aysha Mehek — Data Analyst & Data Scientist" },
+      { name: "twitter:description", content: "BCA graduate and Data Science Intern at MSDC Manipal. Python, SQL, Machine Learning, Analytics and Data Visualization. Based in Karnataka, India." },
+      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/95d6e60f-9ed2-44ac-93c5-ae6e34b165b7/id-preview-f2f53885--fe383af3-d8b9-422c-96d3-6c2e56890b48.lovable.app-1783421938390.png" },
+      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/95d6e60f-9ed2-44ac-93c5-ae6e34b165b7/id-preview-f2f53885--fe383af3-d8b9-422c-96d3-6c2e56890b48.lovable.app-1783421938390.png" },
     ],
     links: [
       {
         rel: "stylesheet",
         href: appCss,
       },
-      { rel: "icon", href: "/favicon.ico", type: "image/x-icon" },
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
       {
