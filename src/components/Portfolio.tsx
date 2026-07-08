@@ -1,5 +1,13 @@
 import { useEffect, useState } from "react";
-import { motion, useReducedMotion } from "framer-motion";
+import {
+  motion,
+  useReducedMotion,
+  useMotionValue,
+  useTransform,
+  useSpring,
+  AnimatePresence,
+  type PanInfo,
+} from "framer-motion";
 import {
   Mail,
   Phone,
@@ -12,6 +20,9 @@ import {
   ArrowUpRight,
   Menu,
   X,
+  Palette,
+  GripVertical,
+  Sparkles,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import avatarAsset from "@/assets/avatar.jpg.asset.json";
@@ -108,6 +119,41 @@ function useTheme() {
   return { theme, toggle };
 }
 
+/* ---------- Accent color picker ---------- */
+const ACCENTS = [
+  { name: "Indigo", light: "oklch(0.55 0.13 255)", dark: "oklch(0.7 0.14 255)", swatch: "#4f46e5" },
+  { name: "Emerald", light: "oklch(0.58 0.14 160)", dark: "oklch(0.72 0.15 160)", swatch: "#10b981" },
+  { name: "Rose", light: "oklch(0.6 0.18 15)", dark: "oklch(0.72 0.17 15)", swatch: "#f43f5e" },
+  { name: "Amber", light: "oklch(0.68 0.16 65)", dark: "oklch(0.78 0.15 70)", swatch: "#f59e0b" },
+  { name: "Violet", light: "oklch(0.55 0.2 300)", dark: "oklch(0.72 0.18 300)", swatch: "#8b5cf6" },
+  { name: "Cyan", light: "oklch(0.6 0.13 210)", dark: "oklch(0.75 0.13 210)", swatch: "#06b6d4" },
+];
+
+function useAccent(theme: "light" | "dark") {
+  const [accent, setAccent] = useState<string>("Indigo");
+
+  useEffect(() => {
+    const stored = localStorage.getItem("accent") ?? "Indigo";
+    setAccent(stored);
+  }, []);
+
+  useEffect(() => {
+    const found = ACCENTS.find((a) => a.name === accent) ?? ACCENTS[0];
+    const value = theme === "dark" ? found.dark : found.light;
+    const root = document.documentElement;
+    root.style.setProperty("--primary", value);
+    root.style.setProperty("--accent", value);
+    root.style.setProperty("--ring", value);
+  }, [accent, theme]);
+
+  const change = (name: string) => {
+    setAccent(name);
+    localStorage.setItem("accent", name);
+  };
+
+  return { accent, change };
+}
+
 function useScrollSpy(ids: string[]) {
   const [active, setActive] = useState(ids[0]);
   useEffect(() => {
@@ -157,6 +203,217 @@ function Pill({ children }: { children: React.ReactNode }) {
   );
 }
 
+/* ---------- Magnetic tilt card wrapper ---------- */
+function TiltCard({
+  children,
+  className = "",
+}: {
+  children: React.ReactNode;
+  className?: string;
+}) {
+  const reduce = useReducedMotion();
+  const x = useMotionValue(0);
+  const y = useMotionValue(0);
+  const rx = useSpring(useTransform(y, [-40, 40], [6, -6]), { stiffness: 200, damping: 15 });
+  const ry = useSpring(useTransform(x, [-40, 40], [-6, 6]), { stiffness: 200, damping: 15 });
+
+  const onMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (reduce) return;
+    const rect = e.currentTarget.getBoundingClientRect();
+    x.set(e.clientX - rect.left - rect.width / 2);
+    y.set(e.clientY - rect.top - rect.height / 2);
+  };
+  const onLeave = () => {
+    x.set(0);
+    y.set(0);
+  };
+
+  return (
+    <motion.div
+      onMouseMove={onMove}
+      onMouseLeave={onLeave}
+      style={{ rotateX: rx, rotateY: ry, transformPerspective: 800 }}
+      className={className}
+    >
+      {children}
+    </motion.div>
+  );
+}
+
+/* ---------- Draggable project card stack ---------- */
+function ProjectCardStack({ projects }: { projects: typeof PROJECTS }) {
+  const [order, setOrder] = useState(projects.map((_, i) => i));
+
+  const sendToBack = () => {
+    setOrder((o) => {
+      const [first, ...rest] = o;
+      return [...rest, first];
+    });
+  };
+
+  const onDragEnd = (_: unknown, info: PanInfo) => {
+    if (Math.abs(info.offset.x) > 120 || Math.abs(info.velocity.x) > 500) {
+      sendToBack();
+    }
+  };
+
+  return (
+    <div className="relative mx-auto h-[440px] w-full max-w-md select-none sm:h-[420px]">
+      {order.map((idx, stackIdx) => {
+        const project = projects[idx];
+        const isTop = stackIdx === 0;
+        return (
+          <motion.div
+            key={project.title}
+            className="absolute inset-0"
+            style={{ zIndex: projects.length - stackIdx }}
+            initial={false}
+            animate={{
+              scale: 1 - stackIdx * 0.05,
+              y: stackIdx * 14,
+              opacity: stackIdx > 2 ? 0 : 1,
+            }}
+            transition={{ type: "spring", stiffness: 300, damping: 30 }}
+            drag={isTop ? "x" : false}
+            dragConstraints={{ left: 0, right: 0 }}
+            dragElastic={0.6}
+            onDragEnd={isTop ? onDragEnd : undefined}
+            whileDrag={{ scale: 1.02, cursor: "grabbing" }}
+          >
+            <StackedProjectCard project={project} isTop={isTop} />
+          </motion.div>
+        );
+      })}
+      <div className="pointer-events-none absolute -bottom-8 left-0 right-0 text-center text-xs text-muted-foreground">
+        <span className="inline-flex items-center gap-1.5">
+          <GripVertical className="h-3 w-3" /> Drag to shuffle · {order.length} projects
+        </span>
+      </div>
+    </div>
+  );
+}
+
+function StackedProjectCard({
+  project,
+  isTop,
+}: {
+  project: (typeof PROJECTS)[number];
+  isTop: boolean;
+}) {
+  return (
+    <div
+      className={`flex h-full flex-col overflow-hidden rounded-2xl border border-border bg-card p-6 shadow-[0_20px_60px_-30px_rgb(0_0_0/0.25)] transition-colors ${
+        isTop ? "cursor-grab active:cursor-grabbing" : "pointer-events-none"
+      }`}
+    >
+      <div className="flex items-start justify-between gap-3">
+        <div className="min-w-0">
+          <div className="mb-2 inline-flex items-center gap-1.5 rounded-full border border-border bg-muted/40 px-2 py-0.5 text-[10px] font-medium uppercase tracking-widest text-muted-foreground">
+            <Sparkles className="h-3 w-3 text-primary" /> Featured
+          </div>
+          <h3 className="font-display text-2xl leading-tight sm:text-3xl">
+            {project.title}
+          </h3>
+          <p className="mt-1 text-sm text-muted-foreground">{project.subtitle}</p>
+        </div>
+        <a
+          href={project.href}
+          target="_blank"
+          rel="noreferrer"
+          onClick={(e) => e.stopPropagation()}
+          className="inline-flex shrink-0 items-center gap-1 rounded-md border border-border p-2 text-muted-foreground transition-colors hover:border-primary/50 hover:text-primary"
+          aria-label={`Open ${project.title} on GitHub`}
+        >
+          <Github className="h-4 w-4" />
+          <ArrowUpRight className="h-4 w-4" />
+        </a>
+      </div>
+      <ul className="mt-4 flex-1 space-y-2 text-[14px] leading-relaxed text-foreground/80">
+        {project.bullets.slice(0, 3).map((b) => (
+          <li key={b} className="flex gap-2">
+            <span className="mt-2 inline-block h-1 w-1 shrink-0 rounded-full bg-primary/70" />
+            <span>{b}</span>
+          </li>
+        ))}
+      </ul>
+      <div className="mt-4 flex flex-wrap gap-1.5">
+        {project.tags.map((t) => (
+          <Pill key={t}>{t}</Pill>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+/* ---------- Color picker popover ---------- */
+function ColorPicker({
+  accent,
+  onChange,
+}: {
+  accent: string;
+  onChange: (name: string) => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const current = ACCENTS.find((a) => a.name === accent) ?? ACCENTS[0];
+
+  return (
+    <div className="relative">
+      <button
+        onClick={() => setOpen((v) => !v)}
+        aria-label="Change accent color"
+        className="inline-flex h-9 w-9 items-center justify-center rounded-md border border-border text-muted-foreground transition-colors hover:text-foreground"
+      >
+        <Palette className="h-4 w-4" style={{ color: current.swatch }} />
+      </button>
+      <AnimatePresence>
+        {open && (
+          <>
+            <div
+              className="fixed inset-0 z-30"
+              onClick={() => setOpen(false)}
+              aria-hidden
+            />
+            <motion.div
+              initial={{ opacity: 0, y: -6, scale: 0.96 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: -6, scale: 0.96 }}
+              transition={{ duration: 0.15 }}
+              className="absolute right-0 z-40 mt-2 w-52 rounded-xl border border-border bg-popover p-3 shadow-lg"
+            >
+              <div className="mb-2 text-[10px] font-medium uppercase tracking-widest text-muted-foreground">
+                Accent · {current.name}
+              </div>
+              <div className="grid grid-cols-6 gap-2">
+                {ACCENTS.map((a) => (
+                  <button
+                    key={a.name}
+                    onClick={() => {
+                      onChange(a.name);
+                    }}
+                    aria-label={a.name}
+                    title={a.name}
+                    className={`h-7 w-7 rounded-full border transition-transform hover:scale-110 ${
+                      accent === a.name
+                        ? "ring-2 ring-offset-2 ring-offset-background"
+                        : "border-border"
+                    }`}
+                    style={{
+                      backgroundColor: a.swatch,
+                      borderColor: a.swatch,
+                      // @ts-expect-error CSS var
+                      "--tw-ring-color": a.swatch,
+                    }}
+                  />
+                ))}
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
+
 function Section({
   id,
   eyebrow,
@@ -176,7 +433,7 @@ function Section({
             <div className="tabular text-xs font-medium uppercase tracking-widest text-primary">
               {eyebrow}
             </div>
-            <h2 className="mt-2 text-2xl font-semibold tracking-tight sm:text-3xl">
+            <h2 className="font-display mt-2 text-4xl leading-[1.05] sm:text-5xl">
               {title}
             </h2>
           </div>
@@ -189,6 +446,7 @@ function Section({
 
 export default function Portfolio() {
   const { theme, toggle } = useTheme();
+  const { accent, change: changeAccent } = useAccent(theme);
   const active = useScrollSpy(NAV.map((n) => n.id));
   const [menuOpen, setMenuOpen] = useState(false);
 
@@ -208,17 +466,25 @@ export default function Portfolio() {
               <a
                 key={n.id}
                 href={`#${n.id}`}
-                className={`rounded-md px-3 py-1.5 text-sm transition-colors ${
+                className={`relative rounded-md px-3 py-1.5 text-sm transition-colors ${
                   active === n.id
                     ? "text-primary"
                     : "text-muted-foreground hover:text-foreground"
                 }`}
               >
                 {n.label}
+                {active === n.id && (
+                  <motion.span
+                    layoutId="nav-active"
+                    className="absolute inset-0 -z-10 rounded-md bg-primary/10"
+                    transition={{ type: "spring", stiffness: 350, damping: 30 }}
+                  />
+                )}
               </a>
             ))}
           </nav>
           <div className="flex items-center gap-1">
+            <ColorPicker accent={accent} onChange={changeAccent} />
             <button
               onClick={toggle}
               aria-label="Toggle theme"
@@ -267,28 +533,37 @@ export default function Portfolio() {
           <Reveal>
             <div className="flex flex-col items-start gap-6 sm:flex-row sm:items-center">
               <motion.div
-                whileHover={{ scale: 1.03 }}
+                drag
+                dragConstraints={{ left: -40, right: 40, top: -20, bottom: 20 }}
+                dragElastic={0.4}
+                dragTransition={{ bounceStiffness: 300, bounceDamping: 20 }}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.98, cursor: "grabbing" }}
                 transition={{ type: "spring", stiffness: 260, damping: 20 }}
-                className="group relative shrink-0"
+                className="group relative shrink-0 cursor-grab"
+                title="Drag me"
               >
-                <div className="absolute -inset-1 rounded-full bg-primary/30 opacity-0 blur-md transition-opacity duration-300 group-hover:opacity-100" />
-                <div className="relative h-24 w-24 overflow-hidden rounded-full border border-border ring-2 ring-transparent transition-all duration-300 group-hover:ring-primary/40 sm:h-28 sm:w-28">
+                <div className="absolute -inset-1 rounded-full bg-gradient-to-tr from-primary/50 via-primary/20 to-transparent opacity-70 blur-md transition-opacity duration-300 group-hover:opacity-100 animate-gradient" />
+                <div className="relative h-24 w-24 overflow-hidden rounded-full border border-border ring-2 ring-transparent transition-all duration-300 group-hover:ring-primary/50 sm:h-28 sm:w-28">
                   <img
                     src={avatarAsset.url}
                     alt="Aysha Mehek"
                     className="h-full w-full object-cover"
+                    draggable={false}
                   />
                 </div>
               </motion.div>
               <div className="min-w-0">
-                <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">
-                  Aysha Mehek
+                <h1 className="font-display text-5xl leading-[0.95] sm:text-6xl">
+                  Aysha <em className="text-primary">Mehek</em>
                 </h1>
-                <p className="mt-1 text-base text-muted-foreground sm:text-lg">
-                  Aspiring Data Analyst & Data Scientist
+                <p className="mt-3 text-base text-muted-foreground sm:text-lg">
+                  Aspiring{" "}
+                  <span className="text-foreground">Data Analyst</span> &{" "}
+                  <span className="text-foreground">Data Scientist</span>
                 </p>
-                <p className="mt-2 text-sm text-foreground/80">
-                  Turning data into decisions.
+                <p className="mt-2 font-mono-ui text-xs text-foreground/70 caret">
+                  Turning data into decisions
                 </p>
                 <p className="mt-3 inline-flex items-center gap-1.5 text-xs text-muted-foreground">
                   <MapPin className="h-3.5 w-3.5" />
@@ -373,10 +648,15 @@ export default function Portfolio() {
 
         {/* Projects */}
         <Section id="projects" eyebrow="03 / Projects" title="Selected work">
-          <div className="grid gap-4 sm:grid-cols-2">
+          <Reveal>
+            <ProjectCardStack projects={PROJECTS} />
+          </Reveal>
+          <div className="mt-16 grid gap-4 sm:grid-cols-2">
             {PROJECTS.map((p, i) => (
               <Reveal key={p.title} delay={i * 0.08}>
-                <ProjectCard project={p} />
+                <TiltCard>
+                  <ProjectCard project={p} />
+                </TiltCard>
               </Reveal>
             ))}
           </div>

@@ -147,7 +147,46 @@
     font-variant-numeric: tabular-nums;
     font-feature-settings: "tnum";
   }
+  .font-display {
+    font-family: "Instrument Serif", "Times New Roman", ui-serif, Georgia, serif;
+    font-weight: 400;
+    letter-spacing: -0.02em;
+  }
+  .font-mono-ui {
+    font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  }
   html {
     scroll-behavior: smooth;
   }
+  ::selection {
+    background-color: color-mix(in oklab, var(--color-primary) 30%, transparent);
+    color: var(--color-foreground);
+  }
+}
+
+@keyframes gradient-shift {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+.animate-gradient {
+  background-size: 200% 200%;
+  animation: gradient-shift 6s ease infinite;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-6px); }
+}
+.animate-float { animation: float 4s ease-in-out infinite; }
+
+@keyframes blink-caret {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+.caret::after {
+  content: "▍";
+  display: inline-block;
+  margin-left: 2px;
+  color: var(--color-primary);
+  animation: blink-caret 1s step-end infinite;
 }
