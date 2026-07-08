@@ -596,7 +596,12 @@ export default function Portfolio() {
                 icon={<Phone className="h-4 w-4" />}
               />
               <Button asChild size="sm" className="ml-1 gap-1.5">
-                <a href="#" aria-label="Download Resume">
+                <a
+                  href="https://drive.google.com/uc?export=download&id=1xBt7-pJfUrtygXWK95An2WUjcCiO8JuM"
+                  target="_blank"
+                  rel="noreferrer"
+                  aria-label="Download Resume"
+                >
                   <Download className="h-4 w-4" />
                   Resume
                 </a>
