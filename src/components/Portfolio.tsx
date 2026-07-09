@@ -128,6 +128,58 @@ const ACCENTS = [
   { name: "Cyan", light: "oklch(0.6 0.13 210)", dark: "oklch(0.75 0.13 210)", swatch: "#06b6d4" },
 ];
 
+/* ---------- Dot grid background ---------- */
+function DotGridBackground({ theme }: { theme: "light" | "dark" }) {
+  const dotAlpha = theme === "dark" ? 0.28 : 0.22;
+  const gridAlpha = theme === "dark" ? 0.06 : 0.05;
+  return (
+    <div
+      aria-hidden
+      className="pointer-events-none fixed inset-0 -z-10 overflow-hidden"
+    >
+      {/* dot grid — tinted with the current accent */}
+      <div
+        className="absolute inset-0"
+        style={{
+          backgroundImage: `radial-gradient(color-mix(in oklab, var(--primary) ${dotAlpha * 100}%, transparent) 1px, transparent 1.2px)`,
+          backgroundSize: "22px 22px",
+          backgroundPosition: "0 0",
+          maskImage:
+            "radial-gradient(ellipse at 50% 30%, black 40%, transparent 80%)",
+          WebkitMaskImage:
+            "radial-gradient(ellipse at 50% 30%, black 40%, transparent 80%)",
+        }}
+      />
+      {/* faint grid lines for depth */}
+      <div
+        className="absolute inset-0"
+        style={{
+          backgroundImage: `linear-gradient(to right, color-mix(in oklab, var(--primary) ${gridAlpha * 100}%, transparent) 1px, transparent 1px), linear-gradient(to bottom, color-mix(in oklab, var(--primary) ${gridAlpha * 100}%, transparent) 1px, transparent 1px)`,
+          backgroundSize: "88px 88px",
+          maskImage:
+            "radial-gradient(ellipse at 50% 20%, black 30%, transparent 75%)",
+          WebkitMaskImage:
+            "radial-gradient(ellipse at 50% 20%, black 30%, transparent 75%)",
+        }}
+      />
+      {/* accent glow blob top */}
+      <div
+        className="absolute -top-40 left-1/2 h-[520px] w-[820px] -translate-x-1/2 rounded-full blur-3xl"
+        style={{
+          background: `radial-gradient(closest-side, color-mix(in oklab, var(--primary) ${theme === "dark" ? 22 : 14}%, transparent), transparent 70%)`,
+        }}
+      />
+      {/* accent glow blob bottom */}
+      <div
+        className="absolute bottom-[-200px] right-[-120px] h-[420px] w-[520px] rounded-full blur-3xl"
+        style={{
+          background: `radial-gradient(closest-side, color-mix(in oklab, var(--primary) ${theme === "dark" ? 18 : 10}%, transparent), transparent 70%)`,
+        }}
+      />
+    </div>
+  );
+}
+
 function useAccent(theme: "light" | "dark") {
   const [accent, setAccent] = useState<string>("Indigo");
 
