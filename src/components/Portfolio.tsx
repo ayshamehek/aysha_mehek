@@ -130,8 +130,8 @@ const ACCENTS = [
 
 /* ---------- Dot grid background ---------- */
 function DotGridBackground({ theme }: { theme: "light" | "dark" }) {
-  const dotAlpha = theme === "dark" ? 0.28 : 0.22;
-  const gridAlpha = theme === "dark" ? 0.06 : 0.05;
+  const dotAlpha = theme === "dark" ? 0.45 : 0.38;
+  const gridAlpha = theme === "dark" ? 0.12 : 0.1;
   return (
     <div
       aria-hidden
@@ -145,9 +145,9 @@ function DotGridBackground({ theme }: { theme: "light" | "dark" }) {
           backgroundSize: "22px 22px",
           backgroundPosition: "0 0",
           maskImage:
-            "radial-gradient(ellipse at 50% 30%, black 40%, transparent 80%)",
+            "radial-gradient(ellipse at 50% 50%, black 60%, transparent 100%)",
           WebkitMaskImage:
-            "radial-gradient(ellipse at 50% 30%, black 40%, transparent 80%)",
+            "radial-gradient(ellipse at 50% 50%, black 60%, transparent 100%)",
         }}
       />
       {/* faint grid lines for depth */}
@@ -157,9 +157,9 @@ function DotGridBackground({ theme }: { theme: "light" | "dark" }) {
           backgroundImage: `linear-gradient(to right, color-mix(in oklab, var(--primary) ${gridAlpha * 100}%, transparent) 1px, transparent 1px), linear-gradient(to bottom, color-mix(in oklab, var(--primary) ${gridAlpha * 100}%, transparent) 1px, transparent 1px)`,
           backgroundSize: "88px 88px",
           maskImage:
-            "radial-gradient(ellipse at 50% 20%, black 30%, transparent 75%)",
+            "radial-gradient(ellipse at 50% 50%, black 55%, transparent 100%)",
           WebkitMaskImage:
-            "radial-gradient(ellipse at 50% 20%, black 30%, transparent 75%)",
+            "radial-gradient(ellipse at 50% 50%, black 55%, transparent 100%)",
         }}
       />
       {/* accent glow blob top */}
