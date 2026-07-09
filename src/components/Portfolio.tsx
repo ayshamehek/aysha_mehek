@@ -450,7 +450,8 @@ export default function Portfolio() {
   const [menuOpen, setMenuOpen] = useState(false);
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <div className="relative min-h-screen bg-background text-foreground">
+      <DotGridBackground theme={theme} />
       {/* Nav */}
       <header className="sticky top-0 z-40 border-b border-border/70 bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="mx-auto flex max-w-4xl items-center justify-between px-4 py-3 sm:px-6">
