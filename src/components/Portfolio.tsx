@@ -591,7 +591,7 @@ export default function Portfolio() {
               />
               <Button asChild size="sm" className="ml-1 gap-1.5">
                 <a
-                  href="https://drive.google.com/uc?export=download&id=1xBt7-pJfUrtygXWK95An2WUjcCiO8JuM"
+                  href="https://drive.google.com/uc?export=download&id=1mN0GdtJ8pMcXIBcajXt2ME5AJuf4Fld6"
                   target="_blank"
                   rel="noreferrer"
                   aria-label="Download Resume"
