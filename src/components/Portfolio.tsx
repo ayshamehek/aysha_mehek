@@ -731,14 +731,6 @@ export default function Portfolio() {
             </Reveal>
             <Reveal delay={0.1}>
               <ContactRow
-                icon={<Linkedin className="h-4 w-4" />}
-                label="LinkedIn"
-                value="linkedin.com/in/aysha-mehek"
-                href="https://www.linkedin.com/in/aysha-mehek"
-              />
-            </Reveal>
-            <Reveal delay={0.15}>
-              <ContactRow
                 icon={<Github className="h-4 w-4" />}
                 label="GitHub"
                 value="github.com/ayshamehek"
