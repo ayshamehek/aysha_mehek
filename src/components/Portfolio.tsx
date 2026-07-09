@@ -10,7 +10,6 @@ import {
 } from "framer-motion";
 import {
   Mail,
-  Phone,
   Github,
   Linkedin,
   MapPin,
@@ -590,11 +589,6 @@ export default function Portfolio() {
                 label="GitHub"
                 icon={<Github className="h-4 w-4" />}
               />
-              <IconLink
-                href="tel:+919591944942"
-                label="Phone"
-                icon={<Phone className="h-4 w-4" />}
-              />
               <Button asChild size="sm" className="ml-1 gap-1.5">
                 <a
                   href="https://drive.google.com/uc?export=download&id=1xBt7-pJfUrtygXWK95An2WUjcCiO8JuM"
@@ -729,21 +723,13 @@ export default function Portfolio() {
             </Reveal>
             <Reveal delay={0.05}>
               <ContactRow
-                icon={<Phone className="h-4 w-4" />}
-                label="Phone"
-                value="+91 95919 44942"
-                href="tel:+919591944942"
-              />
-            </Reveal>
-            <Reveal delay={0.1}>
-              <ContactRow
                 icon={<Linkedin className="h-4 w-4" />}
                 label="LinkedIn"
                 value="linkedin.com/in/aysha-mehek"
                 href="https://www.linkedin.com/in/aysha-mehek"
               />
             </Reveal>
-            <Reveal delay={0.15}>
+            <Reveal delay={0.1}>
               <ContactRow
                 icon={<Github className="h-4 w-4" />}
                 label="GitHub"
