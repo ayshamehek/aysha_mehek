@@ -25,6 +25,8 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import avatarAsset from "@/assets/avatar.jpg.asset.json";
+import watermelonCursor from "@/assets/watermelon-cursor.png.asset.json";
+import kittyCursor from "@/assets/kitty-cursor.png.asset.json";
 
 const NAV = [
   { id: "about", label: "About" },
@@ -205,56 +207,10 @@ function useAccent(theme: "light" | "dark") {
   return { accent, change };
 }
 
-function KawaiiCursors({ accent, theme }: { accent: string; theme: "light" | "dark" }) {
+function KawaiiCursors() {
   useEffect(() => {
-    const found = ACCENTS.find((a) => a.name === accent) ?? ACCENTS[0];
-    // Resolve oklch(...) to a concrete color the browser can rasterize inside an SVG cursor.
-    const probe = document.createElement("span");
-    probe.style.color = theme === "dark" ? found.dark : found.light;
-    document.body.appendChild(probe);
-    const primary = getComputedStyle(probe).color || "#ff5aa8";
-    probe.remove();
-
-    const outline = theme === "dark" ? "#0f1220" : "#1a1a1a";
-
-    const watermelon = `
-<svg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'>
-  <defs><clipPath id='c'><path d='M0 0 L32 0 A32 32 0 0 1 0 32 Z'/></clipPath></defs>
-  <g clip-path='url(#c)'>
-    <circle cx='0' cy='0' r='30' fill='#ff4d6d'/>
-    <circle cx='0' cy='0' r='30' fill='none' stroke='#ffd6dc' stroke-width='2.5'/>
-    <circle cx='0' cy='0' r='27' fill='none' stroke='#74c69d' stroke-width='2'/>
-    <circle cx='0' cy='0' r='24' fill='none' stroke='#2f9e44' stroke-width='1'/>
-    <circle cx='0' cy='0' r='31.5' fill='none' stroke='${primary}' stroke-width='1.5'/>
-    <g fill='${outline}'>
-      <ellipse cx='9' cy='8' rx='1' ry='1.7' transform='rotate(45 9 8)'/>
-      <ellipse cx='15' cy='6' rx='1' ry='1.7' transform='rotate(70 15 6)'/>
-      <ellipse cx='6' cy='15' rx='1' ry='1.7' transform='rotate(20 6 15)'/>
-      <ellipse cx='18' cy='13' rx='1' ry='1.7' transform='rotate(55 18 13)'/>
-      <ellipse cx='12' cy='19' rx='1' ry='1.7' transform='rotate(35 12 19)'/>
-    </g>
-  </g>
-</svg>`.trim();
-
-    const kitty = `
-<svg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'>
-  <path d='M5 11 L9 3 L14 12 Z' fill='#ffffff' stroke='${outline}' stroke-width='1.1' stroke-linejoin='round'/>
-  <path d='M27 11 L23 3 L18 12 Z' fill='#ffffff' stroke='${outline}' stroke-width='1.1' stroke-linejoin='round'/>
-  <ellipse cx='16' cy='19' rx='11' ry='9' fill='#ffffff' stroke='${outline}' stroke-width='1.1'/>
-  <ellipse cx='12' cy='19' rx='1.2' ry='1.7' fill='${outline}'/>
-  <ellipse cx='20' cy='19' rx='1.2' ry='1.7' fill='${outline}'/>
-  <ellipse cx='16' cy='21' rx='1.4' ry='1' fill='#ffb703'/>
-  <path d='M5.5 19.5 L10 19.5 M5.5 21.5 L10 21.8 M22 19.5 L26.5 19.5 M22 21.8 L26.5 21.5' stroke='${outline}' stroke-width='0.7' fill='none' stroke-linecap='round'/>
-  <g transform='translate(22 7)'>
-    <path d='M0 0 Q-3.2 -2.2 -4.4 1 Q-3.2 3.2 0 2 Q3.2 3.2 4.4 1 Q3.2 -2.2 0 0 Z' fill='${primary}' stroke='${outline}' stroke-width='0.8' stroke-linejoin='round'/>
-    <circle cx='0' cy='1' r='1.1' fill='${primary}' stroke='${outline}' stroke-width='0.7'/>
-  </g>
-</svg>`.trim();
-
-    const enc = (s: string) => `url("data:image/svg+xml;utf8,${encodeURIComponent(s)}")`;
-    const arrow = `${enc(watermelon)} 2 2, auto`;
-    const pointer = `${enc(kitty)} 8 4, pointer`;
-
+    const arrow = `url("${watermelonCursor.url}") 4 4, auto`;
+    const pointer = `url("${kittyCursor.url}") 14 14, pointer`;
     const id = "kawaii-cursor-style";
     let styleEl = document.getElementById(id) as HTMLStyleElement | null;
     if (!styleEl) {
@@ -263,11 +219,12 @@ function KawaiiCursors({ accent, theme }: { accent: string; theme: "light" | "da
       document.head.appendChild(styleEl);
     }
     styleEl.textContent = `
-      html, body, div, section, header, footer, main, nav, article, aside, p, span, h1, h2, h3, h4, h5, h6, img, svg { cursor: ${arrow}; }
-      a, button, [role="button"], label, summary, select, [data-cursor="pointer"] { cursor: ${pointer}; }
-      input, textarea, [contenteditable="true"] { cursor: text; }
+      html, body { cursor: ${arrow}; }
+      * { cursor: inherit; }
+      a, button, [role="button"], label, summary, select, [data-cursor="pointer"] { cursor: ${pointer} !important; }
+      input, textarea, [contenteditable="true"] { cursor: text !important; }
     `;
-  }, [accent, theme]);
+  }, []);
   return null;
 }
 
@@ -570,7 +527,7 @@ export default function Portfolio() {
   return (
     <div className="relative min-h-screen text-foreground">
       <DotGridBackground theme={theme} />
-      <KawaiiCursors accent={accent} theme={theme} />
+      <KawaiiCursors />
       {/* Nav */}
       <header className="sticky top-0 z-40 border-b border-border/70 bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="mx-auto flex max-w-4xl items-center justify-between px-4 py-3 sm:px-6">
