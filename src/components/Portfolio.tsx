@@ -570,6 +570,7 @@ export default function Portfolio() {
   return (
     <div className="relative min-h-screen text-foreground">
       <DotGridBackground theme={theme} />
+      <KawaiiCursors accent={accent} theme={theme} />
       {/* Nav */}
       <header className="sticky top-0 z-40 border-b border-border/70 bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="mx-auto flex max-w-4xl items-center justify-between px-4 py-3 sm:px-6">
