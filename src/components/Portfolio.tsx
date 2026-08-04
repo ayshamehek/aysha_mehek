@@ -789,7 +789,16 @@ export default function Portfolio() {
         </Section>
 
         {/* Education */}
-        <Section id="education" eyebrow="05 / Education" title="Education">
+        <Section
+          id="activity"
+          eyebrow="05 / Activity"
+          title="Contribution graph"
+        >
+          <ActivityGraph theme={theme} accentHex={accent.swatch} />
+        </Section>
+
+        {/* Education */}
+        <Section id="education" eyebrow="06 / Education" title="Education">
           <Reveal>
             <div className="rounded-xl border border-border bg-card p-5 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_8px_30px_-12px_rgb(0_0_0/0.15)]">
               <div className="flex flex-wrap items-baseline justify-between gap-2">
@@ -811,7 +820,7 @@ export default function Portfolio() {
         </Section>
 
         {/* Contact */}
-        <Section id="contact" eyebrow="06 / Contact" title="Let's connect">
+        <Section id="contact" eyebrow="07 / Contact" title="Let's connect">
           <Reveal>
             <p className="mb-6 max-w-xl text-[15px] leading-relaxed text-muted-foreground">
               I'm open to Data Analyst and Data Scientist roles, internships,
