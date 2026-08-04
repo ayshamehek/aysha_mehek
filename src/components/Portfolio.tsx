@@ -794,7 +794,12 @@ export default function Portfolio() {
           eyebrow="05 / Activity"
           title="Contribution graph"
         >
-          <ActivityGraph theme={theme} accentHex={accent.swatch} />
+          <ActivityGraph
+            theme={theme}
+            accentHex={
+              (ACCENTS.find((a) => a.name === accent) ?? ACCENTS[0]).swatch
+            }
+          />
         </Section>
 
         {/* Education */}
