@@ -33,6 +33,7 @@ const NAV = [
   { id: "experience", label: "Experience" },
   { id: "projects", label: "Projects" },
   { id: "skills", label: "Skills" },
+  { id: "activity", label: "Activity" },
   { id: "education", label: "Education" },
   { id: "contact", label: "Contact" },
 ];
@@ -518,6 +519,35 @@ function Section({
   );
 }
 
+function ActivityGraph({
+  theme,
+  accentHex,
+}: {
+  theme: "light" | "dark";
+  accentHex: string;
+}) {
+  const c = accentHex.replace("#", "");
+  const text = theme === "dark" ? "e5e7eb" : "1f2937";
+  const src =
+    `https://github-readme-activity-graph.vercel.app/graph` +
+    `?username=ayshamehek&bg_color=00000000&hide_border=true&area=true` +
+    `&color=${text}&title_color=${c}&line=${c}&point=${c}&custom_title=Contribution%20Graph`;
+
+  return (
+    <Reveal>
+      <div className="overflow-hidden rounded-xl border border-border bg-card/60 p-3 backdrop-blur-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_8px_30px_-12px_rgb(0_0_0/0.15)] sm:p-5">
+        <img
+          key={src}
+          src={src}
+          alt="Aysha Mehek's GitHub contribution graph over the last month"
+          loading="lazy"
+          className="w-full"
+        />
+      </div>
+    </Reveal>
+  );
+}
+
 export default function Portfolio() {
   const { theme, toggle } = useTheme();
   const { accent, change: changeAccent } = useAccent(theme);
@@ -759,7 +789,21 @@ export default function Portfolio() {
         </Section>
 
         {/* Education */}
-        <Section id="education" eyebrow="05 / Education" title="Education">
+        <Section
+          id="activity"
+          eyebrow="05 / Activity"
+          title="Contribution graph"
+        >
+          <ActivityGraph
+            theme={theme}
+            accentHex={
+              (ACCENTS.find((a) => a.name === accent) ?? ACCENTS[0]).swatch
+            }
+          />
+        </Section>
+
+        {/* Education */}
+        <Section id="education" eyebrow="06 / Education" title="Education">
           <Reveal>
             <div className="rounded-xl border border-border bg-card p-5 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_8px_30px_-12px_rgb(0_0_0/0.15)]">
               <div className="flex flex-wrap items-baseline justify-between gap-2">
@@ -781,7 +825,7 @@ export default function Portfolio() {
         </Section>
 
         {/* Contact */}
-        <Section id="contact" eyebrow="06 / Contact" title="Let's connect">
+        <Section id="contact" eyebrow="07 / Contact" title="Let's connect">
           <Reveal>
             <p className="mb-6 max-w-xl text-[15px] leading-relaxed text-muted-foreground">
               I'm open to Data Analyst and Data Scientist roles, internships,
