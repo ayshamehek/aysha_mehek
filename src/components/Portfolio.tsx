@@ -24,7 +24,7 @@ import {
   Sparkles,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import avatarAsset from "@/assets/avatar.jpg.asset.json";
+import profileAsset from "@/assets/profile.png.asset.json";
 import watermelonCursor from "@/assets/watermelon-cursor.png.asset.json";
 import kittyCursor from "@/assets/kitty-cursor.png.asset.json";
 
@@ -652,8 +652,8 @@ export default function Portfolio() {
                 <div className="absolute -inset-1 rounded-full bg-gradient-to-tr from-primary/50 via-primary/20 to-transparent opacity-70 blur-md transition-opacity duration-300 group-hover:opacity-100 animate-gradient" />
                 <div className="relative h-24 w-24 overflow-hidden rounded-full border border-border ring-2 ring-transparent transition-all duration-300 group-hover:ring-primary/50 sm:h-28 sm:w-28">
                   <img
-                    src={avatarAsset.url}
-                    alt="Aysha Mehek"
+                    src={profileAsset.url}
+                    alt="Aysha Mehek at a waterfall"
                     className="h-full w-full object-cover"
                     draggable={false}
                   />
