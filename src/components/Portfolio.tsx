@@ -521,6 +521,7 @@ function Section({
 
 export default function Portfolio() {
   const { theme, toggle } = useTheme();
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { accent, change: changeAccent } = useAccent(theme);
   const active = useScrollSpy(NAV.map((n) => n.id));
   const [menuOpen, setMenuOpen] = useState(false);
