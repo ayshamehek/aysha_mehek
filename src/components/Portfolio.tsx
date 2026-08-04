@@ -519,6 +519,35 @@ function Section({
   );
 }
 
+function ActivityGraph({
+  theme,
+  accentHex,
+}: {
+  theme: "light" | "dark";
+  accentHex: string;
+}) {
+  const c = accentHex.replace("#", "");
+  const text = theme === "dark" ? "e5e7eb" : "1f2937";
+  const src =
+    `https://github-readme-activity-graph.vercel.app/graph` +
+    `?username=ayshamehek&bg_color=00000000&hide_border=true&area=true` +
+    `&color=${text}&title_color=${c}&line=${c}&point=${c}&custom_title=Contribution%20Graph`;
+
+  return (
+    <Reveal>
+      <div className="overflow-hidden rounded-xl border border-border bg-card/60 p-3 backdrop-blur-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_8px_30px_-12px_rgb(0_0_0/0.15)] sm:p-5">
+        <img
+          key={src}
+          src={src}
+          alt="Aysha Mehek's GitHub contribution graph over the last month"
+          loading="lazy"
+          className="w-full"
+        />
+      </div>
+    </Reveal>
+  );
+}
+
 export default function Portfolio() {
   const { theme, toggle } = useTheme();
   const { accent, change: changeAccent } = useAccent(theme);
