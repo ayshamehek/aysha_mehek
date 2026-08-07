@@ -12,7 +12,15 @@ export function BackgroundLines({
       {/* Animated wave lines behind the text */}
       <svg
         aria-hidden="true"
-        className="pointer-events-none absolute -inset-y-10 -inset-x-12 -z-10 h-[calc(100%+80px)] w-[calc(100%+96px)] overflow-visible"
+        className="pointer-events-none absolute -z-10 overflow-visible"
+        style={{
+          top: "-40px",
+          bottom: "-40px",
+          left: "-48px",
+          right: "-48px",
+          width: "calc(100% + 96px)",
+          height: "calc(100% + 80px)",
+        }}
         preserveAspectRatio="none"
         viewBox="0 0 900 200"
         fill="none"
