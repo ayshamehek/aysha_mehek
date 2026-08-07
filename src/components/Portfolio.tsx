@@ -679,7 +679,16 @@ export default function Portfolio() {
 
       <main id="top" className="mx-auto max-w-4xl px-4 sm:px-6">
         {/* Hero */}
-        <section className="pt-14 pb-8 sm:pt-24 sm:pb-12">
+        <section className="relative pt-14 pb-10 sm:pt-24 sm:pb-16">
+          {/* ambient glow */}
+          <div
+            aria-hidden
+            className="pointer-events-none absolute left-1/2 top-0 -z-10 h-[420px] w-[820px] max-w-[130%] -translate-x-1/2 -translate-y-1/3 rounded-full opacity-60 blur-3xl"
+            style={{
+              background:
+                "radial-gradient(closest-side, color-mix(in oklab, var(--primary) 38%, transparent), transparent)",
+            }}
+          />
           <Reveal>
             <div className="flex flex-col items-start gap-6 sm:flex-row sm:items-center">
               <motion.div
@@ -690,11 +699,26 @@ export default function Portfolio() {
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.98, cursor: "grabbing" }}
                 transition={{ type: "spring", stiffness: 260, damping: 20 }}
-                className="group relative shrink-0 cursor-grab"
+                className="group relative shrink-0 cursor-grab animate-float"
                 title="Drag me"
               >
-                <div className="absolute -inset-1 rounded-full bg-gradient-to-tr from-primary/50 via-primary/20 to-transparent opacity-70 blur-md transition-opacity duration-300 group-hover:opacity-100 animate-gradient" />
-                <div className="relative h-24 w-24 overflow-hidden rounded-full border border-border ring-2 ring-transparent transition-all duration-300 group-hover:ring-primary/50 sm:h-28 sm:w-28">
+                <div
+                  aria-hidden
+                  className="absolute -inset-6 rounded-full opacity-70 blur-2xl transition-opacity duration-300 group-hover:opacity-100"
+                  style={{
+                    background:
+                      "radial-gradient(closest-side, color-mix(in oklab, var(--primary) 55%, transparent), transparent)",
+                  }}
+                />
+                <div
+                  aria-hidden
+                  className="absolute -inset-[3px] rounded-full opacity-80 animate-gradient"
+                  style={{
+                    background:
+                      "conic-gradient(from 0deg, color-mix(in oklab, var(--primary) 90%, transparent), transparent 35%, color-mix(in oklab, var(--primary) 70%, transparent) 70%, transparent)",
+                  }}
+                />
+                <div className="relative h-28 w-28 overflow-hidden rounded-full border border-border bg-background ring-2 ring-transparent transition-all duration-300 group-hover:ring-primary/60 sm:h-32 sm:w-32">
                   <img
                     src={profileAsset.url}
                     alt="Aysha Mehek at a waterfall"
@@ -707,12 +731,10 @@ export default function Portfolio() {
                 <h1 className="font-display text-5xl leading-[0.95] sm:text-6xl">
                   Aysha <em className="text-primary">Mehek</em>
                 </h1>
-                <p className="mt-3 text-base text-muted-foreground sm:text-lg">
-                  Aspiring{" "}
-                  <span className="text-foreground">Data Analyst</span> &{" "}
-                  <span className="text-foreground">Data Scientist</span>
+                <p className="mt-3 min-h-[1.75rem] font-mono-ui text-base text-muted-foreground sm:text-lg">
+                  Aspiring <Typewriter />
                 </p>
-                <p className="mt-2 font-mono-ui text-xs text-foreground/70 caret">
+                <p className="mt-2 text-xs text-foreground/70">
                   Turning data into decisions
                 </p>
                 <p className="mt-3 inline-flex items-center gap-1.5 text-xs text-muted-foreground">
@@ -724,33 +746,61 @@ export default function Portfolio() {
           </Reveal>
 
           <Reveal delay={0.1}>
-            <div className="mt-8 flex flex-wrap items-center gap-2">
-              <IconLink
-                href="mailto:ayshamehek020@gmail.com"
-                label="Email"
-                icon={<Mail className="h-4 w-4" />}
-              />
-              <IconLink
-                href="https://www.linkedin.com/in/aysha-mehek"
-                label="LinkedIn"
-                icon={<Linkedin className="h-4 w-4" />}
-              />
-              <IconLink
-                href="https://github.com/ayshamehek"
-                label="GitHub"
-                icon={<Github className="h-4 w-4" />}
-              />
-              <Button asChild size="sm" className="ml-1 gap-1.5">
-                <a
-                  href="https://drive.google.com/uc?export=download&id=1mN0GdtJ8pMcXIBcajXt2ME5AJuf4Fld6"
-                  target="_blank"
+            <div className="mt-8 flex flex-wrap items-center gap-3">
+              {[
+                { href: "mailto:ayshamehek020@gmail.com", label: "Email", icon: <Mail className="h-4 w-4" /> },
+                { href: "https://www.linkedin.com/in/aysha-mehek", label: "LinkedIn", icon: <Linkedin className="h-4 w-4" /> },
+                { href: "https://github.com/ayshamehek", label: "GitHub", icon: <Github className="h-4 w-4" /> },
+              ].map((s, idx) => (
+                <motion.a
+                  key={s.label}
+                  href={s.href}
+                  target={s.href.startsWith("http") ? "_blank" : undefined}
                   rel="noreferrer"
-                  aria-label="Download Resume"
+                  aria-label={s.label}
+                  animate={{ y: [0, -5, 0] }}
+                  transition={{
+                    duration: 3.2,
+                    repeat: Infinity,
+                    ease: "easeInOut",
+                    delay: idx * 0.35,
+                  }}
+                  whileHover={{ scale: 1.12, y: -8 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-border bg-card/60 text-muted-foreground backdrop-blur transition-colors hover:border-primary/50 hover:text-primary hover:shadow-[0_8px_24px_-8px_color-mix(in_oklab,var(--primary)_60%,transparent)]"
                 >
-                  <Download className="h-4 w-4" />
-                  Resume
-                </a>
-              </Button>
+                  {s.icon}
+                </motion.a>
+              ))}
+
+              <div className="mx-1 hidden h-6 w-px bg-border sm:block" />
+
+              <motion.div whileHover={{ y: -3 }} whileTap={{ scale: 0.97 }}>
+                <Button
+                  asChild
+                  size="sm"
+                  className="gap-1.5 shadow-[0_10px_30px_-12px_color-mix(in_oklab,var(--primary)_80%,transparent)]"
+                >
+                  <a
+                    href="https://drive.google.com/uc?export=download&id=1mN0GdtJ8pMcXIBcajXt2ME5AJuf4Fld6"
+                    target="_blank"
+                    rel="noreferrer"
+                    aria-label="Download Resume"
+                  >
+                    <Download className="h-4 w-4" />
+                    Resume
+                  </a>
+                </Button>
+              </motion.div>
+
+              <motion.div whileHover={{ y: -3 }} whileTap={{ scale: 0.97 }}>
+                <Button asChild size="sm" variant="outline" className="gap-1.5">
+                  <a href="#contact">
+                    <Sparkles className="h-4 w-4" />
+                    Get in touch
+                  </a>
+                </Button>
+              </motion.div>
             </div>
           </Reveal>
         </section>
