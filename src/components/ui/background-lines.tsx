@@ -9,17 +9,27 @@ export function BackgroundLines({
 }) {
   return (
     <div className={`relative ${className}`}>
+      {/* Frosted glass backdrop panel */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute -inset-6 -z-30 rounded-2xl border border-primary/10 bg-background/40 backdrop-blur-sm sm:-inset-8"
+        style={{
+          boxShadow:
+            "inset 0 1px 0 0 color-mix(in oklab, var(--primary) 12%, transparent), 0 20px 50px -20px color-mix(in oklab, var(--primary) 25%, transparent)",
+        }}
+      />
+
       {/* Animated wave lines behind the text */}
       <svg
         aria-hidden="true"
         className="pointer-events-none absolute -z-10 overflow-visible"
         style={{
-          top: "-40px",
-          bottom: "-40px",
-          left: "-48px",
-          right: "-48px",
-          width: "calc(100% + 96px)",
-          height: "calc(100% + 80px)",
+          top: "-28px",
+          bottom: "-28px",
+          left: "-32px",
+          right: "-32px",
+          width: "calc(100% + 64px)",
+          height: "calc(100% + 56px)",
         }}
         preserveAspectRatio="none"
         viewBox="0 0 900 200"
@@ -27,15 +37,15 @@ export function BackgroundLines({
       >
         <defs>
           <linearGradient id="line-fade" x1="0" x2="1" y1="0" y2="0">
-            <stop offset="0%" stopColor="var(--primary)" stopOpacity="0" />
-            <stop offset="10%" stopColor="var(--primary)" stopOpacity="0.35" />
-            <stop offset="50%" stopColor="var(--primary)" stopOpacity="0.75" />
-            <stop offset="90%" stopColor="var(--primary)" stopOpacity="0.35" />
-            <stop offset="100%" stopColor="var(--primary)" stopOpacity="0" />
+            <stop offset="0%" stopColor="var(--primary)" stopOpacity="0.05" />
+            <stop offset="15%" stopColor="var(--primary)" stopOpacity="0.45" />
+            <stop offset="50%" stopColor="var(--primary)" stopOpacity="0.85" />
+            <stop offset="85%" stopColor="var(--primary)" stopOpacity="0.45" />
+            <stop offset="100%" stopColor="var(--primary)" stopOpacity="0.05" />
           </linearGradient>
 
           <filter id="line-glow" x="-50%" y="-50%" width="200%" height="200%">
-            <feGaussianBlur in="SourceGraphic" stdDeviation="3" result="blur" />
+            <feGaussianBlur in="SourceGraphic" stdDeviation="2.5" result="blur" />
             <feColorMatrix
               in="blur"
               type="matrix"
@@ -51,33 +61,33 @@ export function BackgroundLines({
 
         {/* Wave path 1 - prominent */}
         <path
-          d="M-50 155 C 120 80, 280 195, 450 120 S 750 50, 950 140"
+          d="M-50 150 C 120 80, 280 195, 450 120 S 750 55, 950 145"
           stroke="url(#line-fade)"
-          strokeWidth="3"
+          strokeWidth="3.5"
           strokeLinecap="round"
-          strokeDasharray="120 60"
+          strokeDasharray="140 70"
           filter="url(#line-glow)"
           className="wave-line wave-line-1"
         />
 
         {/* Wave path 2 */}
         <path
-          d="M-50 120 C 150 190, 320 60, 500 130 S 720 200, 950 90"
+          d="M-50 120 C 150 190, 320 60, 500 130 S 720 205, 950 95"
           stroke="url(#line-fade)"
-          strokeWidth="2"
+          strokeWidth="2.5"
           strokeLinecap="round"
-          strokeDasharray="90 50"
+          strokeDasharray="100 60"
           filter="url(#line-glow)"
           className="wave-line wave-line-2"
         />
 
         {/* Wave path 3 */}
         <path
-          d="M-50 180 C 180 120, 340 210, 520 150 S 740 60, 950 170"
+          d="M-50 180 C 180 120, 340 210, 520 150 S 740 65, 950 170"
           stroke="url(#line-fade)"
-          strokeWidth="1.5"
+          strokeWidth="2"
           strokeLinecap="round"
-          strokeDasharray="70 40"
+          strokeDasharray="80 50"
           filter="url(#line-glow)"
           className="wave-line wave-line-3"
         />
@@ -93,16 +103,15 @@ export function BackgroundLines({
           opacity="0.55"
           filter="url(#line-glow)"
         />
-
       </svg>
 
-      {/* Soft accent glow blob behind the text */}
+      {/* Soft accent glow blob behind the panel */}
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute -inset-12 -z-20 rounded-[2.5rem] opacity-60 blur-3xl"
+        className="pointer-events-none absolute -inset-10 -z-40 rounded-[2.5rem] opacity-55 blur-3xl"
         style={{
           background:
-            "radial-gradient(closest-side, color-mix(in oklab, var(--primary) 32%, transparent), transparent 70%)",
+            "radial-gradient(closest-side, color-mix(in oklab, var(--primary) 35%, transparent), transparent 70%)",
         }}
       />
 
@@ -110,4 +119,3 @@ export function BackgroundLines({
     </div>
   );
 }
-
