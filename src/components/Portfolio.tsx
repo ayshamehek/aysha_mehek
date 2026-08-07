@@ -29,6 +29,7 @@ import watermelonCursor from "@/assets/watermelon-cursor.png.asset.json";
 import kittyCursor from "@/assets/kitty-cursor.png.asset.json";
 
 const NAV = [
+
   { id: "about", label: "About" },
   { id: "experience", label: "Experience" },
   { id: "projects", label: "Projects" },
