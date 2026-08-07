@@ -51,45 +51,49 @@ export function BackgroundLines({
 
         {/* Wave path 1 - prominent */}
         <path
-          d="M-50 145 C 120 80, 280 205, 450 125 S 750 55, 950 135"
+          d="M-50 155 C 120 80, 280 195, 450 120 S 750 50, 950 140"
           stroke="url(#line-fade)"
-          strokeWidth="2.5"
+          strokeWidth="3"
           strokeLinecap="round"
+          strokeDasharray="120 60"
           filter="url(#line-glow)"
           className="wave-line wave-line-1"
         />
 
         {/* Wave path 2 */}
         <path
-          d="M-50 115 C 150 185, 320 55, 500 130 S 720 195, 950 95"
+          d="M-50 120 C 150 190, 320 60, 500 130 S 720 200, 950 90"
           stroke="url(#line-fade)"
           strokeWidth="2"
           strokeLinecap="round"
+          strokeDasharray="90 50"
           filter="url(#line-glow)"
           className="wave-line wave-line-2"
         />
 
         {/* Wave path 3 */}
         <path
-          d="M-50 175 C 180 120, 340 215, 520 155 S 740 65, 950 165"
+          d="M-50 180 C 180 120, 340 210, 520 150 S 740 60, 950 170"
           stroke="url(#line-fade)"
           strokeWidth="1.5"
           strokeLinecap="round"
+          strokeDasharray="70 40"
           filter="url(#line-glow)"
           className="wave-line wave-line-3"
         />
 
         {/* Dotted accent line */}
         <path
-          d="M-50 155 C 200 70, 400 215, 650 110 S 850 145, 950 125"
+          d="M-50 165 C 200 70, 400 215, 650 110 S 850 150, 950 125"
           stroke="var(--primary)"
           strokeWidth="4"
           strokeLinecap="round"
           strokeDasharray="10 22"
           className="wave-line wave-line-4"
-          opacity="0.35"
+          opacity="0.4"
           filter="url(#line-glow)"
         />
+
       </svg>
 
       {/* Soft accent glow blob behind the text */}
