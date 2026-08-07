@@ -729,7 +729,7 @@ export default function Portfolio() {
                 </div>
               </motion.div>
               <div className="min-w-0">
-                <BackgroundLines className="inline-block py-2">
+                <BackgroundLines className="inline-block">
                   <h1 className="font-display text-5xl leading-[0.95] sm:text-6xl">
                     Aysha <em className="text-primary">Mehek</em>
                   </h1>
