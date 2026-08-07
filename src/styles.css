@@ -196,7 +196,7 @@
     stroke-dashoffset: 0;
   }
   100% {
-    stroke-dashoffset: -120;
+    stroke-dashoffset: -240;
   }
 }
 
@@ -205,7 +205,7 @@
     transform: translateY(0);
   }
   50% {
-    transform: translateY(-6px);
+    transform: translateY(-4px);
   }
 }
 
