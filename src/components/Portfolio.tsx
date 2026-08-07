@@ -28,8 +28,51 @@ import profileAsset from "@/assets/profile.png.asset.json";
 import watermelonCursor from "@/assets/watermelon-cursor.png.asset.json";
 import kittyCursor from "@/assets/kitty-cursor.png.asset.json";
 
-const NAV = [
+const TITLES = [
+  "Data Analyst",
+  "Data Scientist",
+  "Machine Learning Enthusiast",
+  "Python & SQL Developer",
+];
 
+function Typewriter({ words = TITLES }: { words?: string[] }) {
+  const reduce = useReducedMotion();
+  const [i, setI] = useState(0);
+  const [text, setText] = useState("");
+  const [deleting, setDeleting] = useState(false);
+
+  useEffect(() => {
+    if (reduce) {
+      setText(words[0]);
+      return;
+    }
+    const word = words[i % words.length];
+    if (!deleting && text === word) {
+      const t = setTimeout(() => setDeleting(true), 1400);
+      return () => clearTimeout(t);
+    }
+    if (deleting && text === "") {
+      setDeleting(false);
+      setI((p) => (p + 1) % words.length);
+      return;
+    }
+    const t = setTimeout(
+      () =>
+        setText((p) => (deleting ? word.slice(0, p.length - 1) : word.slice(0, p.length + 1))),
+      deleting ? 45 : 90,
+    );
+    return () => clearTimeout(t);
+  }, [text, deleting, i, words, reduce]);
+
+  return (
+    <span className="text-primary">
+      {text}
+      <span className="caret" aria-hidden />
+    </span>
+  );
+}
+
+const NAV = [
   { id: "about", label: "About" },
   { id: "experience", label: "Experience" },
   { id: "projects", label: "Projects" },
