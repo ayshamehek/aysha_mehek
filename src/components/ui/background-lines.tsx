@@ -86,11 +86,11 @@ export function BackgroundLines({
         <path
           d="M-50 165 C 200 70, 400 215, 650 110 S 850 150, 950 125"
           stroke="var(--primary)"
-          strokeWidth="4"
+          strokeWidth="4.5"
           strokeLinecap="round"
           strokeDasharray="10 22"
           className="wave-line wave-line-4"
-          opacity="0.4"
+          opacity="0.55"
           filter="url(#line-glow)"
         />
 
