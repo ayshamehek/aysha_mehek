@@ -24,6 +24,7 @@ import {
   Sparkles,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { BackgroundLines } from "@/components/ui/background-lines";
 import profileAsset from "@/assets/profile.png.asset.json";
 import watermelonCursor from "@/assets/watermelon-cursor.png.asset.json";
 import kittyCursor from "@/assets/kitty-cursor.png.asset.json";
@@ -728,9 +729,11 @@ export default function Portfolio() {
                 </div>
               </motion.div>
               <div className="min-w-0">
-                <h1 className="font-display text-5xl leading-[0.95] sm:text-6xl">
-                  Aysha <em className="text-primary">Mehek</em>
-                </h1>
+                <BackgroundLines className="inline-block">
+                  <h1 className="font-display text-5xl leading-[0.95] sm:text-6xl">
+                    Aysha <em className="text-primary">Mehek</em>
+                  </h1>
+                </BackgroundLines>
                 <p className="mt-3 min-h-[1.75rem] font-mono-ui text-base text-muted-foreground sm:text-lg">
                   Aspiring <Typewriter />
                 </p>
