@@ -99,10 +99,10 @@ export function BackgroundLines({
       {/* Soft accent glow blob behind the text */}
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute -inset-10 -z-20 rounded-full opacity-50 blur-3xl"
+        className="pointer-events-none absolute -inset-12 -z-20 rounded-[2.5rem] opacity-60 blur-3xl"
         style={{
           background:
-            "radial-gradient(closest-side, color-mix(in oklab, var(--primary) 28%, transparent), transparent 70%)",
+            "radial-gradient(closest-side, color-mix(in oklab, var(--primary) 32%, transparent), transparent 70%)",
         }}
       />
 
