@@ -28,9 +28,9 @@ export function BackgroundLines({
         <defs>
           <linearGradient id="line-fade" x1="0" x2="1" y1="0" y2="0">
             <stop offset="0%" stopColor="var(--primary)" stopOpacity="0" />
-            <stop offset="12%" stopColor="var(--primary)" stopOpacity="0.25" />
-            <stop offset="50%" stopColor="var(--primary)" stopOpacity="0.55" />
-            <stop offset="88%" stopColor="var(--primary)" stopOpacity="0.25" />
+            <stop offset="10%" stopColor="var(--primary)" stopOpacity="0.35" />
+            <stop offset="50%" stopColor="var(--primary)" stopOpacity="0.75" />
+            <stop offset="90%" stopColor="var(--primary)" stopOpacity="0.35" />
             <stop offset="100%" stopColor="var(--primary)" stopOpacity="0" />
           </linearGradient>
 
