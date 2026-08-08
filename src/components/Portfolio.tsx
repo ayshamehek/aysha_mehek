@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   motion,
   useReducedMotion,
@@ -22,6 +22,8 @@ import {
   Palette,
   GripVertical,
   Sparkles,
+  ImagePlus,
+  RotateCcw,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import profileAsset from "@/assets/profile.png.asset.json";
