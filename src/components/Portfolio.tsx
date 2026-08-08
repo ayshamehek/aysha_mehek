@@ -467,6 +467,45 @@ function StackedProjectCard({
 }
 
 /* ---------- Color picker popover ---------- */
+function useProfilePhoto() {
+  const [photo, setPhoto] = useState<string | null>(null);
+  const [dragOver, setDragOver] = useState(false);
+
+  useEffect(() => {
+    try {
+      setPhoto(localStorage.getItem("profile-photo"));
+    } catch {
+      /* ignore */
+    }
+  }, []);
+
+  const accept = (file?: File | null) => {
+    if (!file || !file.type.startsWith("image/")) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      const url = String(reader.result);
+      setPhoto(url);
+      try {
+        localStorage.setItem("profile-photo", url);
+      } catch {
+        /* quota */
+      }
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const reset = () => {
+    setPhoto(null);
+    try {
+      localStorage.removeItem("profile-photo");
+    } catch {
+      /* ignore */
+    }
+  };
+
+  return { photo, dragOver, setDragOver, accept, reset };
+}
+
 function ColorPicker({
   accent,
   onChange,
