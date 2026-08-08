@@ -638,6 +638,8 @@ export default function Portfolio() {
   const { accent, change: changeAccent } = useAccent(theme);
   const active = useScrollSpy(NAV.map((n) => n.id));
   const [menuOpen, setMenuOpen] = useState(false);
+  const { photo, dragOver, setDragOver, accept, reset } = useProfilePhoto();
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   return (
     <div className="relative min-h-screen text-foreground">
