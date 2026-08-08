@@ -597,6 +597,17 @@ export default function Portfolio() {
   const { accent, change: changeAccent } = useAccent(theme);
   const active = useScrollSpy(NAV.map((n) => n.id));
   const [menuOpen, setMenuOpen] = useState(false);
+  const [photo, setPhoto] = useState<string | null>(null);
+  const [dropActive, setDropActive] = useState(false);
+
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem("profile-photo");
+      if (saved) setPhoto(saved);
+    } catch {
+      /* ignore */
+    }
+  }, []);
 
   return (
     <div className="relative min-h-screen text-foreground">
