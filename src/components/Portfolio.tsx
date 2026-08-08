@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   motion,
   useReducedMotion,
@@ -22,6 +22,8 @@ import {
   Palette,
   GripVertical,
   Sparkles,
+  ImagePlus,
+  RotateCcw,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import profileAsset from "@/assets/profile.png.asset.json";
@@ -465,6 +467,45 @@ function StackedProjectCard({
 }
 
 /* ---------- Color picker popover ---------- */
+function useProfilePhoto() {
+  const [photo, setPhoto] = useState<string | null>(null);
+  const [dragOver, setDragOver] = useState(false);
+
+  useEffect(() => {
+    try {
+      setPhoto(localStorage.getItem("profile-photo"));
+    } catch {
+      /* ignore */
+    }
+  }, []);
+
+  const accept = (file?: File | null) => {
+    if (!file || !file.type.startsWith("image/")) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      const url = String(reader.result);
+      setPhoto(url);
+      try {
+        localStorage.setItem("profile-photo", url);
+      } catch {
+        /* quota */
+      }
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const reset = () => {
+    setPhoto(null);
+    try {
+      localStorage.removeItem("profile-photo");
+    } catch {
+      /* ignore */
+    }
+  };
+
+  return { photo, dragOver, setDragOver, accept, reset };
+}
+
 function ColorPicker({
   accent,
   onChange,
@@ -597,6 +638,8 @@ export default function Portfolio() {
   const { accent, change: changeAccent } = useAccent(theme);
   const active = useScrollSpy(NAV.map((n) => n.id));
   const [menuOpen, setMenuOpen] = useState(false);
+  const { photo, dragOver, setDragOver, accept, reset } = useProfilePhoto();
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   return (
     <div className="relative min-h-screen text-foreground">
@@ -700,8 +743,25 @@ export default function Portfolio() {
                 whileTap={{ scale: 0.98, cursor: "grabbing" }}
                 transition={{ type: "spring", stiffness: 260, damping: 20 }}
                 className="group relative shrink-0 cursor-grab animate-float"
-                title="Drag me"
+                title="Drag me — or drop an image here to change the photo"
+                onDragOver={(e) => {
+                  e.preventDefault();
+                  setDragOver(true);
+                }}
+                onDragLeave={() => setDragOver(false)}
+                onDrop={(e) => {
+                  e.preventDefault();
+                  setDragOver(false);
+                  accept(e.dataTransfer?.files?.[0]);
+                }}
               >
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={(e) => accept(e.target.files?.[0])}
+                />
                 <div
                   aria-hidden
                   className="absolute -inset-6 rounded-full opacity-70 blur-2xl transition-opacity duration-300 group-hover:opacity-100"
@@ -718,14 +778,38 @@ export default function Portfolio() {
                       "conic-gradient(from 0deg, color-mix(in oklab, var(--primary) 90%, transparent), transparent 35%, color-mix(in oklab, var(--primary) 70%, transparent) 70%, transparent)",
                   }}
                 />
-                <div className="relative h-28 w-28 overflow-hidden rounded-full border border-border bg-background ring-2 ring-transparent transition-all duration-300 group-hover:ring-primary/60 sm:h-32 sm:w-32">
+                <div
+                  className={`relative h-28 w-28 overflow-hidden rounded-full border border-border bg-background ring-2 transition-all duration-300 group-hover:ring-primary/60 sm:h-32 sm:w-32 ${
+                    dragOver ? "ring-primary scale-105" : "ring-transparent"
+                  }`}
+                >
                   <img
-                    src={profileAsset.url}
+                    src={photo ?? profileAsset.url}
                     alt="Aysha Mehek at a waterfall"
                     className="h-full w-full object-cover"
                     draggable={false}
                   />
+                  <button
+                    type="button"
+                    onClick={() => fileInputRef.current?.click()}
+                    className="absolute inset-0 flex items-center justify-center gap-1 bg-background/70 text-[10px] font-mono-ui opacity-0 backdrop-blur-sm transition-opacity duration-200 group-hover:opacity-100"
+                    aria-label="Change profile photo"
+                  >
+                    <ImagePlus className="h-3.5 w-3.5" />
+                    Drop / click
+                  </button>
                 </div>
+                {photo && (
+                  <button
+                    type="button"
+                    onClick={reset}
+                    className="absolute -right-1 -top-1 rounded-full border border-border bg-background p-1.5 text-muted-foreground transition-colors hover:text-primary"
+                    aria-label="Reset profile photo"
+                    title="Reset photo"
+                  >
+                    <RotateCcw className="h-3 w-3" />
+                  </button>
+                )}
               </motion.div>
               <div className="min-w-0">
                 <h1 className="font-display text-5xl leading-[0.95] sm:text-6xl">
