@@ -597,6 +597,17 @@ export default function Portfolio() {
   const { accent, change: changeAccent } = useAccent(theme);
   const active = useScrollSpy(NAV.map((n) => n.id));
   const [menuOpen, setMenuOpen] = useState(false);
+  const [photo, setPhoto] = useState<string | null>(null);
+  const [dropActive, setDropActive] = useState(false);
+
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem("profile-photo");
+      if (saved) setPhoto(saved);
+    } catch {
+      /* ignore */
+    }
+  }, []);
 
   return (
     <div className="relative min-h-screen text-foreground">
@@ -692,6 +703,36 @@ export default function Portfolio() {
           <Reveal>
             <div className="flex flex-col items-start gap-6 sm:flex-row sm:items-center">
               <motion.div
+                onDragOver={(e) => {
+                  e.preventDefault();
+                  setDropActive(true);
+                }}
+                onDragLeave={() => setDropActive(false)}
+                onDrop={(e) => {
+                  e.preventDefault();
+                  setDropActive(false);
+                  const file = e.dataTransfer?.files?.[0];
+                  if (!file || !file.type.startsWith("image/")) return;
+                  const reader = new FileReader();
+                  reader.onload = () => {
+                    const url = String(reader.result);
+                    setPhoto(url);
+                    try {
+                      localStorage.setItem("profile-photo", url);
+                    } catch {
+                      /* ignore quota errors */
+                    }
+                  };
+                  reader.readAsDataURL(file);
+                }}
+                onDoubleClick={() => {
+                  setPhoto(null);
+                  try {
+                    localStorage.removeItem("profile-photo");
+                  } catch {
+                    /* ignore */
+                  }
+                }}
                 drag
                 dragConstraints={{ left: -40, right: 40, top: -20, bottom: 20 }}
                 dragElastic={0.4}
@@ -700,7 +741,7 @@ export default function Portfolio() {
                 whileTap={{ scale: 0.98, cursor: "grabbing" }}
                 transition={{ type: "spring", stiffness: 260, damping: 20 }}
                 className="group relative shrink-0 cursor-grab animate-float"
-                title="Drag me"
+                title="Drag me — or drop an image here to swap the photo (double-click to reset)"
               >
                 <div
                   aria-hidden
@@ -718,13 +759,24 @@ export default function Portfolio() {
                       "conic-gradient(from 0deg, color-mix(in oklab, var(--primary) 90%, transparent), transparent 35%, color-mix(in oklab, var(--primary) 70%, transparent) 70%, transparent)",
                   }}
                 />
-                <div className="relative h-28 w-28 overflow-hidden rounded-full border border-border bg-background ring-2 ring-transparent transition-all duration-300 group-hover:ring-primary/60 sm:h-32 sm:w-32">
+                <div
+                  className={`relative h-28 w-28 overflow-hidden rounded-full border bg-background ring-2 transition-all duration-300 sm:h-32 sm:w-32 ${
+                    dropActive
+                      ? "border-primary ring-primary scale-105"
+                      : "border-border ring-transparent group-hover:ring-primary/60"
+                  }`}
+                >
                   <img
-                    src={profileAsset.url}
+                    src={photo ?? profileAsset.url}
                     alt="Aysha Mehek at a waterfall"
                     className="h-full w-full object-cover"
                     draggable={false}
                   />
+                  {dropActive && (
+                    <div className="absolute inset-0 grid place-items-center bg-background/70 font-mono-ui text-[10px] uppercase tracking-wide text-primary">
+                      Drop photo
+                    </div>
+                  )}
                 </div>
               </motion.div>
               <div className="min-w-0">
