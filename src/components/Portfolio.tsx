@@ -955,10 +955,21 @@ export default function Portfolio() {
           </div>
         </Section>
 
-        <footer className="border-t border-border py-8 text-xs text-muted-foreground">
+        <footer className="border-t border-border py-12 text-xs text-muted-foreground">
           <div className="flex flex-wrap items-center justify-between gap-2">
             <span>Designed & built by Aysha Mehek</span>
             <span className="tabular">© {new Date().getFullYear()}</span>
+          </div>
+          <div className="mt-8 overflow-hidden">
+            <p className="mb-3 text-center text-[11px] font-mono-ui uppercase tracking-widest text-muted-foreground/70">
+              Move your cursor within the text below
+            </p>
+            <FluidGradientText
+              radius={180}
+              className="w-full text-center font-display text-[16vw] leading-[0.85] tracking-tight sm:text-[14vw]"
+            >
+              Aysha Mehek
+            </FluidGradientText>
           </div>
         </footer>
       </main>
