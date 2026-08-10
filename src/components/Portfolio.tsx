@@ -961,11 +961,6 @@ export default function Portfolio() {
             <span>Designed & built by Aysha Mehek</span>
             <span className="tabular">© {new Date().getFullYear()}</span>
           </div>
-          <div className="mt-8 overflow-hidden">
-            <p className="mb-3 text-center text-[11px] font-mono-ui uppercase tracking-widest text-muted-foreground/70">
-              Move your cursor within the text below
-            </p>
-            <FluidGradientText
               radius={180}
               className="w-full whitespace-nowrap text-center font-display text-[12vw] leading-[0.85] tracking-tight sm:text-[9vw]"
             >
