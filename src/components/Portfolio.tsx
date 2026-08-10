@@ -967,7 +967,7 @@ export default function Portfolio() {
             </p>
             <FluidGradientText
               radius={180}
-              className="w-full whitespace-nowrap text-center font-display text-[16vw] leading-[0.85] tracking-tight sm:text-[14vw]"
+              className="w-full whitespace-nowrap text-center font-display text-[12vw] leading-[0.85] tracking-tight sm:text-[9vw]"
             >
               Aysha Mehek
             </FluidGradientText>
