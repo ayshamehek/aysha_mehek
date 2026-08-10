@@ -957,10 +957,8 @@ export default function Portfolio() {
         </Section>
 
         <footer className="border-t border-border py-12 text-xs text-muted-foreground">
-          <div className="flex flex-wrap items-center justify-between gap-2">
-            <span>Designed & built by Aysha Mehek</span>
-            <span className="tabular">© {new Date().getFullYear()}</span>
-          </div>
+          <div className="mt-8 overflow-hidden">
+            <FluidGradientText
               radius={180}
               className="w-full whitespace-nowrap text-center font-display text-[12vw] leading-[0.85] tracking-tight sm:text-[9vw]"
             >
