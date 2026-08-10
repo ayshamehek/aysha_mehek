@@ -729,7 +729,7 @@ export default function Portfolio() {
                 </div>
               </motion.div>
               <div className="min-w-0">
-                <h1 className="font-display text-5xl leading-[0.95] sm:text-6xl">
+                <h1 className="font-display whitespace-nowrap text-5xl leading-[0.95] sm:text-6xl">
                   Aysha <em className="text-primary">Mehek</em>
                 </h1>
                 <p className="mt-3 min-h-[1.75rem] font-mono-ui text-base text-muted-foreground sm:text-lg">
@@ -967,7 +967,7 @@ export default function Portfolio() {
             </p>
             <FluidGradientText
               radius={180}
-              className="w-full text-center font-display text-[16vw] leading-[0.85] tracking-tight sm:text-[14vw]"
+              className="w-full whitespace-nowrap text-center font-display text-[16vw] leading-[0.85] tracking-tight sm:text-[14vw]"
             >
               Aysha Mehek
             </FluidGradientText>
