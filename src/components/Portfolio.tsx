@@ -25,6 +25,7 @@ import {
   Sparkles,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { HoverEffect } from "@/components/ui/card-hover-effect";
 import profileAsset from "@/assets/profile.png.asset.json";
 import watermelonCursor from "@/assets/watermelon-cursor.png.asset.json";
 import kittyCursor from "@/assets/kitty-cursor.png.asset.json";
