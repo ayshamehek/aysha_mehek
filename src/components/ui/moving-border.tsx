@@ -9,7 +9,7 @@ export function MovingBorder({
   containerClassName,
   borderClassName,
   as: Tag = "div",
-  duration = 3500,
+  duration = 3000,
   radius = "1.25rem",
   borderWidth = 1,
   showSparkle = true,
@@ -24,42 +24,48 @@ export function MovingBorder({
   borderWidth?: number;
   showSparkle?: boolean;
 }) {
+  const glowColor = "color-mix(in oklab, var(--primary) 65%, transparent)";
+
   return (
     <Tag
       className={cn(
-        "group relative overflow-hidden p-[1px]",
+        "group relative overflow-hidden",
         containerClassName,
       )}
       style={{ borderRadius: radius }}
     >
-      {/* animated rotating conic gradient ring */}
+      {/* animated rotating conic gradient ring — the moving border */}
       <motion.div
         className={cn(
-          "pointer-events-none absolute -inset-[200%] z-0 opacity-100",
+          "pointer-events-none absolute -inset-[300%] z-0",
           borderClassName,
         )}
         animate={{ rotate: 360 }}
-        transition={{ duration: duration / 1000, repeat: Infinity, ease: "linear" }}
+        transition={{
+          duration: duration / 1000,
+          repeat: Infinity,
+          ease: "linear",
+        }}
         style={{
           background: `conic-gradient(
             from 0deg,
             transparent 0deg,
-            color-mix(in oklab, var(--primary) 90%, transparent) 45deg,
-            color-mix(in oklab, var(--primary) 100%, transparent) 70deg,
-            color-mix(in oklab, var(--primary) 50%, transparent) 110deg,
-            transparent 180deg,
+            ${glowColor} 20deg,
+            color-mix(in oklab, var(--primary) 100%, transparent) 55deg,
+            ${glowColor} 90deg,
+            transparent 160deg,
             transparent 360deg
           )`,
         }}
       />
 
-      {/* subtle secondary glow ring that spins slightly slower, adds sparkle depth */}
+      {/* secondary sparkle ring rotating counter-clockwise */}
       {showSparkle && (
         <motion.div
-          className="pointer-events-none absolute -inset-[200%] z-0 opacity-60 mix-blend-screen"
+          className="pointer-events-none absolute -inset-[250%] z-0 opacity-70 mix-blend-screen"
           animate={{ rotate: -360 }}
           transition={{
-            duration: duration / 1000 + 1.2,
+            duration: duration / 1000 + 1.5,
             repeat: Infinity,
             ease: "linear",
           }}
@@ -67,17 +73,27 @@ export function MovingBorder({
             background: `conic-gradient(
               from 0deg,
               transparent 0deg,
-              color-mix(in oklab, var(--primary) 60%, transparent) 20deg,
-              transparent 60deg,
-              transparent 160deg,
-              color-mix(in oklab, var(--primary) 80%, transparent) 200deg,
-              transparent 260deg,
+              transparent 120deg,
+              color-mix(in oklab, var(--primary) 85%, transparent) 150deg,
+              color-mix(in oklab, var(--primary) 45%, transparent) 200deg,
+              transparent 230deg,
               transparent 360deg
             )`,
-            filter: "blur(1px)",
+            filter: "blur(1.5px)",
           }}
         />
       )}
+
+      {/* soft accent glow behind the visible border */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0 -z-10 opacity-0 transition-opacity duration-500 group-hover:opacity-100"
+        style={{
+          borderRadius: radius,
+          boxShadow:
+            "0 0 34px -4px color-mix(in oklab, var(--primary) 60%, transparent), inset 0 0 24px -14px color-mix(in oklab, var(--primary) 35%, transparent)",
+        }}
+      />
 
       {/* inner mask that creates the thin visible border */}
       <div
@@ -94,17 +110,6 @@ export function MovingBorder({
       >
         {children}
       </div>
-
-      {/* soft outer glow, accent-aware */}
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-0 -z-10 opacity-0 transition-opacity duration-500 group-hover:opacity-100"
-        style={{
-          borderRadius: radius,
-          boxShadow:
-            "0 0 28px -6px color-mix(in oklab, var(--primary) 55%, transparent), inset 0 0 20px -12px color-mix(in oklab, var(--primary) 30%, transparent)",
-        }}
-      />
     </Tag>
   );
 }
