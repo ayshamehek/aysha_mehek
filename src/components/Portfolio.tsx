@@ -25,6 +25,7 @@ import {
   Sparkles,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { MovingBorder } from "@/components/ui/moving-border";
 import { HoverEffect } from "@/components/ui/card-hover-effect";
 import profileAsset from "@/assets/profile.png.asset.json";
 import watermelonCursor from "@/assets/watermelon-cursor.png.asset.json";
@@ -901,22 +902,29 @@ export default function Portfolio() {
         {/* Education */}
         <Section id="education" eyebrow="06 / Education" title="Education">
           <Reveal>
-            <div className="rounded-xl border border-border bg-card p-5 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_8px_30px_-12px_rgb(0_0_0/0.15)]">
-              <div className="flex flex-wrap items-baseline justify-between gap-2">
-                <div>
-                  <h3 className="text-base font-semibold tracking-tight">
-                    Beary's College of Education, Kodi, Kundapura
-                  </h3>
-                  <p className="text-sm text-muted-foreground">
-                    Mangalore University · Bachelor of Computer Applications
-                    (BCA)
-                  </p>
-                </div>
-                <span className="tabular text-xs text-muted-foreground">
-                  2023 — 2026
-                </span>
+          <MovingBorder
+            as="div"
+            duration={3000}
+            borderWidth={1}
+            radius="1.25rem"
+            containerClassName="transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_8px_30px_-12px_rgb(0_0_0/0.15)]"
+            className="rounded-xl bg-card p-5"
+          >
+            <div className="flex flex-wrap items-baseline justify-between gap-2">
+              <div>
+                <h3 className="text-base font-semibold tracking-tight">
+                  Beary's College of Education, Kodi, Kundapura
+                </h3>
+                <p className="text-sm text-muted-foreground">
+                  Mangalore University · Bachelor of Computer Applications
+                  (BCA)
+                </p>
               </div>
+              <span className="tabular text-xs text-muted-foreground">
+                2023 — 2026
+              </span>
             </div>
+          </MovingBorder>
           </Reveal>
         </Section>
 
