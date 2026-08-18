@@ -928,32 +928,31 @@ export default function Portfolio() {
               email.
             </p>
           </Reveal>
-          <div className="grid gap-3 sm:grid-cols-2">
-            <Reveal>
-              <ContactRow
-                icon={<Mail className="h-4 w-4" />}
-                label="Email"
-                value="ayshamehek020@gmail.com"
-                href="mailto:ayshamehek020@gmail.com"
-              />
-            </Reveal>
-            <Reveal delay={0.05}>
-              <ContactRow
-                icon={<Linkedin className="h-4 w-4" />}
-                label="LinkedIn"
-                value="linkedin.com/in/aysha-mehek"
-                href="https://www.linkedin.com/in/aysha-mehek"
-              />
-            </Reveal>
-            <Reveal delay={0.1}>
-              <ContactRow
-                icon={<Github className="h-4 w-4" />}
-                label="GitHub"
-                value="github.com/ayshamehek"
-                href="https://github.com/ayshamehek"
-              />
-            </Reveal>
-          </div>
+          <Reveal>
+            <HoverEffect
+              className="-mx-2"
+              items={[
+                {
+                  title: "Email",
+                  description: "ayshamehek020@gmail.com",
+                  link: "mailto:ayshamehek020@gmail.com",
+                  icon: <Mail className="h-4 w-4" />,
+                },
+                {
+                  title: "LinkedIn",
+                  description: "linkedin.com/in/aysha-mehek",
+                  link: "https://www.linkedin.com/in/aysha-mehek",
+                  icon: <Linkedin className="h-4 w-4" />,
+                },
+                {
+                  title: "GitHub",
+                  description: "github.com/ayshamehek",
+                  link: "https://github.com/ayshamehek",
+                  icon: <Github className="h-4 w-4" />,
+                },
+              ]}
+            />
+          </Reveal>
         </Section>
 
         <footer className="border-t border-border py-12 text-xs text-muted-foreground">
