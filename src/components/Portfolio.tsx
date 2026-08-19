@@ -27,6 +27,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { MovingBorder } from "@/components/ui/moving-border";
 import { HoverEffect } from "@/components/ui/card-hover-effect";
+import { CanvasText } from "@/components/ui/canvas-text";
 import profileAsset from "@/assets/profile.png.asset.json";
 import watermelonCursor from "@/assets/watermelon-cursor.png.asset.json";
 import kittyCursor from "@/assets/kitty-cursor.png.asset.json";
@@ -812,9 +813,12 @@ export default function Portfolio() {
         <Section id="about" eyebrow="01 / About" title="Hello">
           <Reveal>
             <div className="space-y-4 text-[15px] leading-relaxed text-foreground/85">
-              <p>
-                Hi, I'm Aysha — a BCA graduate with a real passion for data
-                science, machine learning, and analytics. I'm currently a Data
+              <p className="text-lg leading-relaxed sm:text-xl">
+                Hi, I'm Aysha — a BCA graduate with a real passion for{" "}
+                <CanvasText className="font-display text-[1.35em] leading-none">
+                  data science
+                </CanvasText>
+                , machine learning, and analytics. I'm currently a Data
                 Science Intern at MSDC, Manipal, where I'm sharpening my skills
                 in Python, SQL, data analysis, data visualization, and machine
                 learning through hands-on, real-world projects.
@@ -823,8 +827,15 @@ export default function Portfolio() {
                 I love the moment when a messy dataset starts making sense — when
                 a chart or a model quietly answers a question the business
                 didn't know how to ask. I'm actively looking for opportunities
-                as a <span className="text-foreground">Data Analyst</span> or{" "}
-                <span className="text-foreground">Data Scientist</span>.
+                as a{" "}
+                <CanvasText className="font-display text-[1.3em] leading-none">
+                  Data Analyst
+                </CanvasText>{" "}
+                or{" "}
+                <CanvasText className="font-display text-[1.3em] leading-none">
+                  Data Scientist
+                </CanvasText>
+                .
               </p>
             </div>
           </Reveal>
