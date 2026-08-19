@@ -44,7 +44,7 @@ function colorFor(
 export function CanvasText({
   children,
   className,
-  lines = 22,
+  lines = 26,
   speed = 1,
 }: CanvasTextProps) {
   const hostRef = React.useRef<HTMLSpanElement>(null);
@@ -117,8 +117,8 @@ export function CanvasText({
         const p = i / (lines - 1);
         const hueShift = (p - 0.5) * 90;
         lctx.strokeStyle = colorFor(lctx, accent, hueShift);
-        lctx.globalAlpha = 0.6 + 0.4 * Math.sin(p * Math.PI);
-        lctx.lineWidth = 1.2 + 1.6 * Math.sin(p * Math.PI);
+        lctx.globalAlpha = 0.72 + 0.28 * Math.sin(p * Math.PI);
+        lctx.lineWidth = 1.4 + 1.8 * Math.sin(p * Math.PI);
         lctx.beginPath();
         for (let x = -10; x <= w + 10; x += 6) {
           const nx = x / Math.max(w, 1);
@@ -177,7 +177,10 @@ export function CanvasText({
   return (
     <span
       ref={hostRef}
-      className={cn("relative inline-block align-baseline", className)}
+      className={cn(
+        "relative inline-block align-baseline transition-transform duration-200 ease-out hover:-translate-y-[2px]",
+        className,
+      )}
     >
       {/* invisible text drives layout + font metrics + a11y */}
       <span ref={measureRef} className="invisible whitespace-pre">
