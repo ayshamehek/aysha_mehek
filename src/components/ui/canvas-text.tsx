@@ -94,7 +94,7 @@ export function CanvasText({
       for (let i = 0; i < lines; i++) {
         const p = i / (lines - 1);
         const hueShift = (p - 0.5) * 90;
-        ctx.strokeStyle = `oklch(from ${accent} l c calc(h + ${hueShift}))`;
+        ctx.strokeStyle = colorFor(ctx, accent, hueShift);
         ctx.globalAlpha = 0.55 + 0.45 * Math.sin(p * Math.PI);
         ctx.lineWidth = 1.1 + 1.4 * Math.sin(p * Math.PI);
         ctx.beginPath();
