@@ -86,14 +86,10 @@ export function CanvasText({
       accent = readAccent(host);
     };
 
-    const ro = new ResizeObserver(resize);
-    ro.observe(measure);
-    resize();
-
     const start = performance.now();
 
     const draw = (now: number) => {
-      const t = ((now - start) / 1000) * speed;
+      const t = reduced ? 0 : ((now - start) / 1000) * speed;
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
       ctx.clearRect(0, 0, w, h);
 
@@ -144,6 +140,13 @@ export function CanvasText({
 
       if (!reduced) raf = requestAnimationFrame(draw);
     };
+
+    const ro = new ResizeObserver(() => {
+      resize();
+      if (reduced) draw(performance.now());
+    });
+    ro.observe(measure);
+    resize();
 
     raf = requestAnimationFrame(draw);
 
