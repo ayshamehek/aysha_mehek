@@ -17,6 +17,26 @@ function readAccent(el: HTMLElement) {
   return cs.getPropertyValue("--primary").trim() || "#6366f1";
 }
 
+let supportsRelativeOklch: boolean | null = null;
+
+function colorFor(
+  ctx: CanvasRenderingContext2D,
+  accent: string,
+  hueShift: number,
+) {
+  if (supportsRelativeOklch === null) {
+    const prev = ctx.strokeStyle;
+    ctx.strokeStyle = "#000";
+    ctx.strokeStyle = `oklch(from ${accent} l c calc(h + 30))`;
+    supportsRelativeOklch = ctx.strokeStyle !== "#000000";
+    ctx.strokeStyle = prev;
+  }
+  if (supportsRelativeOklch) {
+    return `oklch(from ${accent} l c calc(h + ${hueShift}))`;
+  }
+  return `hsl(${((260 + hueShift) % 360 + 360) % 360} 70% 60%)`;
+}
+
 /**
  * Animated text: colorful curved lines are drawn on a canvas and clipped to
  * the glyph shapes of the text using canvas compositing.
