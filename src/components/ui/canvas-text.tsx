@@ -72,6 +72,9 @@ export function CanvasText({
     let accent = readAccent(host);
 
     const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    const layer = document.createElement("canvas");
+    const lctx = layer.getContext("2d");
+    if (!lctx) return;
 
     const resize = () => {
       const r = measure.getBoundingClientRect();
@@ -79,6 +82,8 @@ export function CanvasText({
       h = Math.max(1, Math.ceil(r.height));
       canvas.width = w * dpr;
       canvas.height = h * dpr;
+      layer.width = w * dpr;
+      layer.height = h * dpr;
       canvas.style.width = `${w}px`;
       canvas.style.height = `${h}px`;
       const cs = getComputedStyle(measure);
@@ -91,17 +96,18 @@ export function CanvasText({
     const draw = (now: number) => {
       const t = reduced ? 0 : ((now - start) / 1000) * speed;
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      lctx.setTransform(dpr, 0, 0, dpr, 0, 0);
       ctx.clearRect(0, 0, w, h);
+      lctx.clearRect(0, 0, w, h);
 
-      // 1) glyph mask
+      // 1) glyph mask on the visible canvas
       ctx.font = font;
       ctx.textBaseline = "middle";
       ctx.fillStyle = "#000";
       ctx.fillText(children, 0, h / 2);
 
-      // 2) colorful curved lines, clipped to glyphs
-      ctx.globalCompositeOperation = "source-in";
-      ctx.lineCap = "round";
+      // 2) colorful curved lines on an offscreen layer
+      lctx.lineCap = "round";
 
       const px = pointer.current.x;
       const py = pointer.current.y;
@@ -110,10 +116,10 @@ export function CanvasText({
       for (let i = 0; i < lines; i++) {
         const p = i / (lines - 1);
         const hueShift = (p - 0.5) * 90;
-        ctx.strokeStyle = colorFor(ctx, accent, hueShift);
-        ctx.globalAlpha = 0.55 + 0.45 * Math.sin(p * Math.PI);
-        ctx.lineWidth = 1.1 + 1.4 * Math.sin(p * Math.PI);
-        ctx.beginPath();
+        lctx.strokeStyle = colorFor(lctx, accent, hueShift);
+        lctx.globalAlpha = 0.6 + 0.4 * Math.sin(p * Math.PI);
+        lctx.lineWidth = 1.2 + 1.6 * Math.sin(p * Math.PI);
+        lctx.beginPath();
         for (let x = -10; x <= w + 10; x += 6) {
           const nx = x / Math.max(w, 1);
           const wave =
@@ -126,13 +132,16 @@ export function CanvasText({
             (py - 0.5) *
             2;
           const y = h * (0.15 + 0.7 * p) + wave + pull;
-          if (x === -10) ctx.moveTo(x, y);
-          else ctx.lineTo(x, y);
+          if (x === -10) lctx.moveTo(x, y);
+          else lctx.lineTo(x, y);
         }
-        ctx.stroke();
+        lctx.stroke();
       }
+      lctx.globalAlpha = 1;
 
-      ctx.globalAlpha = 1;
+      // 3) clip the lines to the glyph shapes
+      ctx.globalCompositeOperation = "source-in";
+      ctx.drawImage(layer, 0, 0, w, h);
       ctx.globalCompositeOperation = "source-over";
 
       // ease pointer influence back down
