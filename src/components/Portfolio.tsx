@@ -28,6 +28,7 @@ import { Button } from "@/components/ui/button";
 import { MovingBorder } from "@/components/ui/moving-border";
 import { HoverEffect } from "@/components/ui/card-hover-effect";
 import { CanvasText } from "@/components/ui/canvas-text";
+import { NavSparkles } from "@/components/ui/sparkles";
 import profileAsset from "@/assets/profile.png.asset.json";
 import watermelonCursor from "@/assets/watermelon-cursor.png.asset.json";
 import kittyCursor from "@/assets/kitty-cursor.png.asset.json";
@@ -681,7 +682,10 @@ export default function Portfolio() {
         )}
       </header>
 
+      <NavSparkles />
+
       <main id="top" className="mx-auto max-w-4xl px-4 sm:px-6">
+
         {/* Hero */}
         <section className="relative pt-14 pb-10 sm:pt-24 sm:pb-16">
           {/* ambient glow */}
