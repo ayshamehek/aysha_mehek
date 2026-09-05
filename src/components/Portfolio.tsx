@@ -189,7 +189,18 @@ function DotGridBackground({ theme }: { theme: "light" | "dark" }) {
       aria-hidden
       className="pointer-events-none fixed inset-0 -z-10 overflow-hidden"
     >
+      {/* drifting procedural clouds */}
+      <div className="absolute inset-0">
+        <CloudShader
+          className="h-full w-full"
+          speed={0.55}
+          count={4}
+          density={theme === "dark" ? 0.42 : 0.58}
+          opacity={theme === "dark" ? 0.35 : 0.5}
+        />
+      </div>
       {/* dot grid — tinted with the current accent */}
+
       <div
         className="absolute inset-0"
         style={{
