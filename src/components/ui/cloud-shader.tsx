@@ -66,17 +66,17 @@ void main(){
 
   // soft billows spanning the whole sky, gently fading at the very bottom
   float band = smoothstep(-0.15, 0.35, uv.y);
-  float lo = 0.46 - uDensity * 0.30;
-  float d = smoothstep(lo, lo + 0.30, clouds);
-  d = pow(d, 0.85) * mix(0.55, 1.0, band);
+  float lo = 0.52 - uDensity * 0.18;
+  float d = smoothstep(lo, lo + 0.22, clouds);
+  d = pow(d, 1.25) * mix(0.45, 1.0, band);
 
   // luminous rim where the billows break
   float edge = smoothstep(lo - 0.04, lo + 0.12, clouds) - smoothstep(lo + 0.12, lo + 0.42, clouds);
 
-  vec3 col = mix(uSky, uCloud, clamp(d * 1.15, 0.0, 1.0));
-  col += uTint * edge * 0.45;
+  vec3 col = mix(uSky, uCloud, clamp(d * 1.2, 0.0, 1.0));
+  col += uTint * edge * 0.35;
 
-  float alpha = clamp(d * 1.25 + edge * 0.35, 0.0, 1.0);
+  float alpha = clamp(d * 0.95 + edge * 0.22, 0.0, 1.0);
   gl_FragColor = vec4(col, alpha);
 }
 
