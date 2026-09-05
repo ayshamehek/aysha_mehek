@@ -174,17 +174,18 @@ export function CloudShader({
       const host = canvas.parentElement ?? document.body;
       gl.uniform3fv(
         uSky,
-        readColor(host, "color-mix(in oklab, var(--primary) 22%, var(--background))"),
+        readColor(host, "color-mix(in oklab, var(--primary) 30%, var(--background))"),
       );
       gl.uniform3fv(
         uCloud,
         readColor(
           host,
-          "color-mix(in oklab, var(--primary) 10%, var(--card))",
+          "color-mix(in oklab, var(--primary) 62%, var(--background))",
         ),
       );
       gl.uniform3fv(uTint, readColor(host, "var(--primary)"));
     };
+
     applyTheme();
 
     const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
