@@ -41,10 +41,22 @@ export function SparklesCore({
     let h = 0;
     const dpr = Math.min(window.devicePixelRatio || 1, 2);
 
+    // Resolve the CSS custom property (which may be a color-mix()/var()
+    // expression) into a concrete rgb() string the canvas can paint with.
+    const probe = document.createElement("span");
+    probe.style.cssText = "position:absolute;width:0;height:0;opacity:0";
+    canvas.parentElement?.appendChild(probe);
+
     const color = () => {
       if (particleColor) return particleColor;
       const cs = getComputedStyle(canvas);
-      return cs.getPropertyValue("--sparkle-color").trim() || "#ffffff";
+      const raw = cs.getPropertyValue("--sparkle-color").trim();
+      if (!raw) return "#ffffff";
+      probe.style.color = "";
+      probe.style.color = raw;
+      const resolved = getComputedStyle(probe).color;
+      if (resolved && resolved !== "rgba(0, 0, 0, 0)") return resolved;
+      return cs.color || "#ffffff";
     };
 
     const build = () => {
@@ -107,6 +119,7 @@ export function SparklesCore({
     const mo = new MutationObserver(() => {
       fill = color();
     });
+    mo.observe(canvas, { attributes: true, attributeFilter: ["style"] });
     mo.observe(document.documentElement, {
       attributes: true,
       attributeFilter: ["class", "style"],
@@ -116,6 +129,7 @@ export function SparklesCore({
       cancelAnimationFrame(raf);
       ro.disconnect();
       mo.disconnect();
+      probe.remove();
     };
   }, [minSize, maxSize, particleDensity, speed, particleColor]);
 
@@ -130,7 +144,7 @@ export function NavSparkles() {
       style={
         {
           "--sparkle-color":
-            "color-mix(in oklab, var(--primary) 55%, var(--foreground))",
+            "color-mix(in oklab, var(--primary) 65%, var(--foreground))",
         } as React.CSSProperties
       }
     >
