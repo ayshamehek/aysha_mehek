@@ -29,6 +29,7 @@ import { MovingBorder } from "@/components/ui/moving-border";
 import { HoverEffect } from "@/components/ui/card-hover-effect";
 import { CanvasText } from "@/components/ui/canvas-text";
 import { NavSparkles } from "@/components/ui/sparkles";
+import { CloudShader } from "@/components/ui/cloud-shader";
 import profileAsset from "@/assets/profile.png.asset.json";
 import watermelonCursor from "@/assets/watermelon-cursor.png.asset.json";
 import kittyCursor from "@/assets/kitty-cursor.png.asset.json";
@@ -189,7 +190,18 @@ function DotGridBackground({ theme }: { theme: "light" | "dark" }) {
       aria-hidden
       className="pointer-events-none fixed inset-0 -z-10 overflow-hidden"
     >
+      {/* drifting procedural clouds */}
+      <div className="absolute inset-0">
+        <CloudShader
+          className="h-full w-full"
+          speed={0.55}
+          count={4}
+          density={theme === "dark" ? 0.5 : 0.68}
+          opacity={theme === "dark" ? 0.4 : 0.7}
+        />
+      </div>
       {/* dot grid — tinted with the current accent */}
+
       <div
         className="absolute inset-0"
         style={{
