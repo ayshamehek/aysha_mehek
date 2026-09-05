@@ -66,16 +66,16 @@ void main(){
 
   // shape the clouds: soft billows, drifting band across the sky
   float band = smoothstep(0.02, 0.55, uv.y) * smoothstep(1.05, 0.45, uv.y);
-  float d = smoothstep(0.52 - uDensity * 0.22, 0.86, clouds) * band;
+  float d = smoothstep(0.55 - uDensity * 0.25, 0.78, clouds) * band;
 
   // subtle silver lining from the accent
   float edge = smoothstep(0.42, 0.62, clouds) - smoothstep(0.62, 0.9, clouds);
 
   vec3 col = uSky;
   col = mix(col, uCloud, clamp(d, 0.0, 1.0));
-  col += uTint * edge * 0.35;
+  col += uTint * edge * 0.28;
 
-  float alpha = clamp(d * 0.92 + edge * 0.25, 0.0, 1.0);
+  float alpha = clamp(d * 1.0 + edge * 0.18, 0.0, 1.0);
   gl_FragColor = vec4(col, alpha);
 }
 `;
@@ -178,7 +178,7 @@ export function CloudShader({
         uCloud,
         readColor(
           host,
-          "color-mix(in oklab, var(--primary) 16%, var(--card))",
+          "color-mix(in oklab, var(--primary) 10%, var(--card))",
         ),
       );
       gl.uniform3fv(uTint, readColor(host, "var(--primary)"));
