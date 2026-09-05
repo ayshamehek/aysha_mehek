@@ -194,11 +194,12 @@ function DotGridBackground({ theme }: { theme: "light" | "dark" }) {
       <div className="absolute inset-0">
         <CloudShader
           className="h-full w-full"
-          speed={0.55}
+          speed={0.5}
           count={4}
-          density={theme === "dark" ? 0.5 : 0.68}
-          opacity={theme === "dark" ? 0.4 : 0.7}
+          density={theme === "dark" ? 0.72 : 0.8}
+          opacity={theme === "dark" ? 0.55 : 0.8}
         />
+
       </div>
       {/* dot grid — tinted with the current accent */}
 
