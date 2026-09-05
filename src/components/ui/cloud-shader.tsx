@@ -55,29 +55,31 @@ void main(){
   for (int i = 0; i < 4; i++){
     float fi = float(i);
     if (fi >= uCount) break;
-    float scale = 1.6 + fi * 1.35;
-    float drift = t * (0.06 + fi * 0.035);
-    float layer = fbm(st * scale + vec2(drift, -drift * 0.15 + fi * 3.1));
-    float weight = 1.0 / (1.0 + fi * 0.7);
+    float scale = 1.1 + fi * 1.05;
+    float drift = t * (0.05 + fi * 0.03);
+    float layer = fbm(st * scale + vec2(drift, -drift * 0.12 + fi * 3.1));
+    float weight = 1.0 / (1.0 + fi * 0.6);
     acc += layer * weight;
     w += weight;
   }
   float clouds = acc / max(w, 0.001);
 
-  // shape the clouds: soft billows, drifting band across the sky
-  float band = smoothstep(0.02, 0.55, uv.y) * smoothstep(1.05, 0.45, uv.y);
-  float d = smoothstep(0.55 - uDensity * 0.25, 0.78, clouds) * band;
+  // soft billows spanning the whole sky, gently fading at the very bottom
+  float band = smoothstep(-0.15, 0.35, uv.y);
+  float lo = 0.52 - uDensity * 0.18;
+  float d = smoothstep(lo, lo + 0.22, clouds);
+  d = pow(d, 1.25) * mix(0.45, 1.0, band);
 
-  // subtle silver lining from the accent
-  float edge = smoothstep(0.42, 0.62, clouds) - smoothstep(0.62, 0.9, clouds);
+  // luminous rim where the billows break
+  float edge = smoothstep(lo - 0.04, lo + 0.12, clouds) - smoothstep(lo + 0.12, lo + 0.42, clouds);
 
-  vec3 col = uSky;
-  col = mix(col, uCloud, clamp(d, 0.0, 1.0));
-  col += uTint * edge * 0.28;
+  vec3 col = mix(uSky, uCloud, clamp(d * 1.2, 0.0, 1.0));
+  col += uTint * edge * 0.35;
 
-  float alpha = clamp(d * 1.0 + edge * 0.18, 0.0, 1.0);
+  float alpha = clamp(d * 0.95 + edge * 0.22, 0.0, 1.0);
   gl_FragColor = vec4(col, alpha);
 }
+
 `;
 
 function compile(gl: WebGLRenderingContext, type: number, src: string) {
@@ -172,17 +174,18 @@ export function CloudShader({
       const host = canvas.parentElement ?? document.body;
       gl.uniform3fv(
         uSky,
-        readColor(host, "color-mix(in oklab, var(--primary) 22%, var(--background))"),
+        readColor(host, "color-mix(in oklab, var(--primary) 30%, var(--background))"),
       );
       gl.uniform3fv(
         uCloud,
         readColor(
           host,
-          "color-mix(in oklab, var(--primary) 10%, var(--card))",
+          "color-mix(in oklab, var(--primary) 62%, var(--background))",
         ),
       );
       gl.uniform3fv(uTint, readColor(host, "var(--primary)"));
     };
+
     applyTheme();
 
     const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
