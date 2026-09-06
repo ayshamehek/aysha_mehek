@@ -196,8 +196,8 @@ function DotGridBackground({ theme }: { theme: "light" | "dark" }) {
           className="h-full w-full"
           speed={0.5}
           count={4}
-          density={theme === "dark" ? 0.6 : 0.66}
-          opacity={theme === "dark" ? 0.45 : 0.55}
+          density={theme === "dark" ? 0.62 : 0.74}
+          opacity={theme === "dark" ? 0.52 : 0.78}
         />
 
       </div>
