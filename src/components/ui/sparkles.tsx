@@ -140,31 +140,40 @@ export function NavSparkles() {
   return (
     <div
       aria-hidden
-      className="pointer-events-none relative h-24 w-full overflow-hidden sm:h-28"
+      className="pointer-events-none relative h-32 w-full overflow-hidden sm:h-40"
       style={
         {
           "--sparkle-color":
-            "color-mix(in oklab, var(--primary) 65%, var(--foreground))",
+            "color-mix(in oklab, var(--primary) 75%, var(--foreground))",
         } as React.CSSProperties
       }
     >
-      {/* beam lines */}
-      <div className="absolute inset-x-[12%] top-0 h-[2px] bg-gradient-to-r from-transparent via-primary to-transparent blur-sm" />
-      <div className="absolute inset-x-[12%] top-0 h-px bg-gradient-to-r from-transparent via-primary to-transparent" />
-      <div className="absolute inset-x-[34%] top-0 h-[5px] bg-gradient-to-r from-transparent via-primary/70 to-transparent blur-md" />
-      <div className="absolute inset-x-[38%] top-0 h-px bg-gradient-to-r from-transparent via-primary/80 to-transparent" />
-
-      {/* glow under beam */}
+      {/* subtle ambient tint */}
       <div
-        className="absolute left-1/2 top-0 h-24 w-[70%] -translate-x-1/2 opacity-60 blur-2xl"
+        className="absolute inset-0 opacity-40"
         style={{
           background:
-            "radial-gradient(closest-side, color-mix(in oklab, var(--primary) 45%, transparent), transparent)",
+            "radial-gradient(ellipse at 50% 0%, color-mix(in oklab, var(--primary) 12%, transparent), transparent 60%)",
         }}
       />
 
-      <div className="absolute inset-0 [mask-image:radial-gradient(70%_100%_at_50%_0%,black,transparent)]">
-        <SparklesCore minSize={0.4} maxSize={1.1} particleDensity={1100} />
+      {/* beam lines */}
+      <div className="absolute inset-x-[10%] top-0 h-[3px] bg-gradient-to-r from-transparent via-primary to-transparent blur-sm" />
+      <div className="absolute inset-x-[10%] top-0 h-px bg-gradient-to-r from-transparent via-primary to-transparent" />
+      <div className="absolute inset-x-[32%] top-0 h-[6px] bg-gradient-to-r from-transparent via-primary to-transparent blur-md" />
+      <div className="absolute inset-x-[36%] top-0 h-px bg-gradient-to-r from-transparent via-primary to-transparent" />
+
+      {/* glow under beam */}
+      <div
+        className="absolute left-1/2 top-0 h-28 w-[75%] -translate-x-1/2 opacity-80 blur-3xl sm:h-36"
+        style={{
+          background:
+            "radial-gradient(closest-side, color-mix(in oklab, var(--primary) 55%, transparent), transparent)",
+        }}
+      />
+
+      <div className="absolute inset-0 [mask-image:radial-gradient(80%_100%_at_50%_0%,black,transparent)]">
+        <SparklesCore minSize={0.5} maxSize={1.8} particleDensity={1600} speed={1.2} />
       </div>
     </div>
   );
