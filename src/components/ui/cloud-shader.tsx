@@ -16,6 +16,8 @@ uniform float uDensity;
 uniform vec3 uSky;
 uniform vec3 uCloud;
 uniform vec3 uTint;
+uniform vec2 uPointer;
+uniform float uDark;
 
 float hash(vec2 p){
   p = fract(p * vec2(123.34, 456.21));
@@ -45,11 +47,19 @@ float fbm(vec2 p){
   return v;
 }
 
+float segmentDistance(vec2 p, vec2 a, vec2 b){
+  vec2 pa = p - a;
+  vec2 ba = b - a;
+  float h = clamp(dot(pa, ba) / dot(ba, ba), 0.0, 1.0);
+  return length(pa - ba * h);
+}
+
 void main(){
   vec2 uv = gl_FragCoord.xy / uRes.xy;
   vec2 st = vec2(uv.x * (uRes.x / uRes.y), uv.y);
 
   float t = uTime * uSpeed;
+  st += (uPointer - 0.5) * vec2(0.055, 0.025);
   float acc = 0.0;
   float w = 0.0;
   for (int i = 0; i < 4; i++){
@@ -64,26 +74,48 @@ void main(){
   }
   float clouds = acc / max(w, 0.001);
 
-  // soft billows spanning the whole sky, gently fading at the very bottom
-  float band = smoothstep(-0.15, 0.35, uv.y);
-  float lo = 0.52 - uDensity * 0.18;
-  float d = smoothstep(lo, lo + 0.22, clouds);
-  d = pow(d, 1.25) * mix(0.45, 1.0, band);
+  // Distinct layered billows with enough definition on near-white surfaces.
+  float band = smoothstep(-0.08, 0.26, uv.y);
+  float lo = 0.48 - uDensity * 0.2;
+  float d = smoothstep(lo, lo + 0.19, clouds);
+  d = pow(d, 1.08) * mix(0.5, 1.0, band);
 
   // luminous rim where the billows break
   float edge = smoothstep(lo - 0.04, lo + 0.12, clouds) - smoothstep(lo + 0.12, lo + 0.42, clouds);
 
-  vec3 col = mix(uSky, uCloud, clamp(d * 1.2, 0.0, 1.0));
-  col += uTint * edge * 0.35;
+  float detail = fbm(st * 5.2 - vec2(t * 0.035, 2.7));
+  float shade = smoothstep(0.34, 0.78, detail) * d;
+  vec3 col = mix(uSky, uCloud, clamp(d * 1.28, 0.0, 1.0));
+  col = mix(col, uTint, shade * mix(0.2, 0.11, uDark));
+  col += mix(vec3(1.0), uTint, uDark * 0.35) * edge * mix(0.5, 0.32, uDark);
 
-  float alpha = clamp(d * 0.95 + edge * 0.22, 0.0, 1.0);
+  // A brief branching bolt emerges between cloud layers every few seconds.
+  float cycle = floor(t * 0.18);
+  float phase = fract(t * 0.18);
+  float strike = smoothstep(0.035, 0.075, phase) * (1.0 - smoothstep(0.15, 0.22, phase));
+  strike += 0.55 * smoothstep(0.24, 0.27, phase) * (1.0 - smoothstep(0.3, 0.34, phase));
+  float rootX = 0.28 + hash(vec2(cycle, 4.7)) * 0.44;
+  vec2 p0 = vec2(rootX, 0.77);
+  vec2 p1 = vec2(rootX + (hash(vec2(cycle, 1.2)) - 0.5) * 0.055, 0.66);
+  vec2 p2 = vec2(rootX + (hash(vec2(cycle, 2.3)) - 0.5) * 0.09, 0.54);
+  vec2 p3 = vec2(rootX + (hash(vec2(cycle, 3.4)) - 0.5) * 0.13, 0.39);
+  float boltDist = min(min(segmentDistance(uv, p0, p1), segmentDistance(uv, p1, p2)), segmentDistance(uv, p2, p3));
+  float bolt = exp(-boltDist * 780.0) * strike;
+  float boltGlow = exp(-boltDist * 72.0) * strike;
+  float cloudGate = mix(0.42, 1.0, smoothstep(0.04, 0.52, d));
+  vec3 lightning = mix(vec3(0.93, 0.98, 1.0), uTint, 0.32);
+  col += lightning * (bolt * 3.0 + boltGlow * 0.68) * cloudGate;
+  col += lightning * strike * d * 0.14;
+
+  float alpha = clamp(d * mix(0.9, 0.72, uDark) + edge * 0.28 + boltGlow * 0.42, 0.0, 1.0);
   gl_FragColor = vec4(col, alpha);
 }
 
 `;
 
 function compile(gl: WebGLRenderingContext, type: number, src: string) {
-  const s = gl.createShader(type)!;
+  const s = gl.createShader(type);
+  if (!s) return null;
   gl.shaderSource(s, src);
   gl.compileShader(s);
   return s;
@@ -104,7 +136,8 @@ function readColor(el: HTMLElement, value: string): [number, number, number] {
   }
   const c = document.createElement("canvas");
   c.width = c.height = 1;
-  const ctx = c.getContext("2d")!;
+  const ctx = c.getContext("2d");
+  if (!ctx) return [1, 1, 1];
   ctx.fillStyle = resolved;
   ctx.fillRect(0, 0, 1, 1);
   const d = ctx.getImageData(0, 0, 1, 1).data;
@@ -136,9 +169,12 @@ export function CloudShader({
     });
     if (!gl) return;
 
-    const prog = gl.createProgram()!;
-    gl.attachShader(prog, compile(gl, gl.VERTEX_SHADER, VERT));
-    gl.attachShader(prog, compile(gl, gl.FRAGMENT_SHADER, FRAG));
+    const prog = gl.createProgram();
+    const vertexShader = compile(gl, gl.VERTEX_SHADER, VERT);
+    const fragmentShader = compile(gl, gl.FRAGMENT_SHADER, FRAG);
+    if (!prog || !vertexShader || !fragmentShader) return;
+    gl.attachShader(prog, vertexShader);
+    gl.attachShader(prog, fragmentShader);
     gl.linkProgram(prog);
     gl.useProgram(prog);
 
@@ -165,10 +201,13 @@ export function CloudShader({
     const uSky = u("uSky");
     const uCloud = u("uCloud");
     const uTint = u("uTint");
+    const uPointer = u("uPointer");
+    const uDark = u("uDark");
 
     gl.uniform1f(uSpeed, speed);
     gl.uniform1f(uCount, Math.max(1, Math.min(4, count)));
     gl.uniform1f(uDensity, density);
+    gl.uniform2f(uPointer, 0.5, 0.5);
 
     const applyTheme = () => {
       const host = canvas.parentElement ?? document.body;
@@ -184,6 +223,7 @@ export function CloudShader({
         ),
       );
       gl.uniform3fv(uTint, readColor(host, "var(--primary)"));
+      gl.uniform1f(uDark, document.documentElement.classList.contains("dark") ? 1 : 0);
     };
 
     applyTheme();
@@ -216,6 +256,14 @@ export function CloudShader({
 
     const ro = new ResizeObserver(resize);
     ro.observe(canvas);
+    let pointerX = 0.5;
+    let pointerY = 0.5;
+    const onPointerMove = (event: PointerEvent) => {
+      pointerX += (event.clientX / window.innerWidth - pointerX) * 0.18;
+      pointerY += (1 - event.clientY / window.innerHeight - pointerY) * 0.18;
+      gl.uniform2f(uPointer, pointerX, pointerY);
+    };
+    window.addEventListener("pointermove", onPointerMove, { passive: true });
     const mo = new MutationObserver(applyTheme);
     mo.observe(document.documentElement, {
       attributes: true,
@@ -226,6 +274,11 @@ export function CloudShader({
       cancelAnimationFrame(raf);
       ro.disconnect();
       mo.disconnect();
+      window.removeEventListener("pointermove", onPointerMove);
+      gl.deleteBuffer(buf);
+      gl.deleteProgram(prog);
+      gl.deleteShader(vertexShader);
+      gl.deleteShader(fragmentShader);
     };
   }, [speed, count, density]);
 
