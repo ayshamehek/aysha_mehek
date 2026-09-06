@@ -102,12 +102,12 @@ void main(){
   float boltDist = min(min(segmentDistance(uv, p0, p1), segmentDistance(uv, p1, p2)), segmentDistance(uv, p2, p3));
   float bolt = exp(-boltDist * 780.0) * strike;
   float boltGlow = exp(-boltDist * 72.0) * strike;
-  float cloudGate = smoothstep(0.08, 0.62, d);
+  float cloudGate = mix(0.42, 1.0, smoothstep(0.04, 0.52, d));
   vec3 lightning = mix(vec3(0.93, 0.98, 1.0), uTint, 0.32);
-  col += lightning * (bolt * 2.4 + boltGlow * 0.48) * cloudGate;
-  col += lightning * strike * d * 0.1;
+  col += lightning * (bolt * 3.0 + boltGlow * 0.68) * cloudGate;
+  col += lightning * strike * d * 0.14;
 
-  float alpha = clamp(d * mix(0.9, 0.72, uDark) + edge * 0.28 + boltGlow * 0.28, 0.0, 1.0);
+  float alpha = clamp(d * mix(0.9, 0.72, uDark) + edge * 0.28 + boltGlow * 0.42, 0.0, 1.0);
   gl_FragColor = vec4(col, alpha);
 }
 
