@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { FluidGradientText } from "@/components/fluid-gradient-text";
 import {
   motion,
@@ -337,6 +337,122 @@ function Pill({ children }: { children: React.ReactNode }) {
   );
 }
 
+
+/* ---------- Skills stack with microinteractions ---------- */
+function SkillPill({ label, index }: { label: string; index: number }) {
+  const reduce = useReducedMotion();
+  return (
+    <motion.span
+      initial={reduce ? false : { opacity: 0, y: 6, scale: 0.96 }}
+      whileInView={{ opacity: 1, y: 0, scale: 1 }}
+      viewport={{ once: true, margin: "-40px" }}
+      transition={{
+        duration: 0.25,
+        delay: index * 0.03,
+        ease: [0.22, 1, 0.36, 1],
+      }}
+      whileHover={reduce ? undefined : { y: -3, scale: 1.05 }}
+      whileTap={{ scale: 0.97 }}
+      className="group/pill relative inline-flex cursor-default items-center rounded-full border border-border bg-muted/40 px-2.5 py-1 text-xs font-medium text-muted-foreground transition-colors duration-200 hover:border-primary/50 hover:text-foreground"
+      style={{
+        // soft accent glow on hover
+        boxShadow: "none",
+      }}
+    >
+      <span
+        aria-hidden
+        className="pointer-events-none absolute inset-0 rounded-full opacity-0 transition-opacity duration-200 group-hover/pill:opacity-100"
+        style={{
+          background:
+            "radial-gradient(60% 120% at 50% 0%, color-mix(in oklab, var(--primary) 26%, transparent), transparent 70%)",
+          boxShadow:
+            "0 6px 18px -8px color-mix(in oklab, var(--primary) 65%, transparent)",
+        }}
+      />
+      <span className="relative">{label}</span>
+    </motion.span>
+  );
+}
+
+function SkillRow({
+  group,
+  index,
+}: {
+  group: { label: string; items: string[] };
+  index: number;
+}) {
+  const reduce = useReducedMotion();
+  const ref = useRef<HTMLDivElement>(null);
+  const [spot, setSpot] = useState<{ x: number; y: number } | null>(null);
+
+  return (
+    <motion.div
+      ref={ref}
+      onPointerMove={(e) => {
+        const r = ref.current?.getBoundingClientRect();
+        if (!r) return;
+        setSpot({ x: e.clientX - r.left, y: e.clientY - r.top });
+      }}
+      onPointerLeave={() => setSpot(null)}
+      initial={reduce ? false : { opacity: 0, y: 14 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "-60px" }}
+      transition={{
+        duration: 0.45,
+        delay: index * 0.06,
+        ease: [0.22, 1, 0.36, 1],
+      }}
+      className="group/row relative overflow-hidden"
+    >
+      {/* pointer spotlight */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0 transition-opacity duration-300"
+        style={{
+          opacity: spot ? 1 : 0,
+          background: spot
+            ? `radial-gradient(220px 120px at ${spot.x}px ${spot.y}px, color-mix(in oklab, var(--primary) 12%, transparent), transparent 70%)`
+            : undefined,
+        }}
+      />
+      {/* accent edge that grows in on hover */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute left-0 top-0 h-full w-[2px] origin-top scale-y-0 bg-primary transition-transform duration-300 ease-out group-hover/row:scale-y-100"
+      />
+      <div className="relative grid grid-cols-[minmax(0,1fr)] gap-3 px-4 py-5 transition-[padding] duration-300 sm:grid-cols-[160px_minmax(0,1fr)] sm:items-center sm:px-5 sm:group-hover/row:pl-7">
+        <div className="flex items-center gap-2">
+          <span className="font-mono-ui text-[10px] tabular text-primary/70">
+            {String(index + 1).padStart(2, "0")}
+          </span>
+          <span className="text-xs font-medium uppercase tracking-widest text-muted-foreground transition-colors duration-200 group-hover/row:text-foreground">
+            {group.label}
+          </span>
+          <span className="font-mono-ui text-[10px] tabular text-muted-foreground/60">
+            ({group.items.length})
+          </span>
+        </div>
+        <div className="flex flex-wrap gap-1.5">
+          {group.items.map((it, j) => (
+            <SkillPill key={it} label={it} index={j} />
+          ))}
+        </div>
+      </div>
+    </motion.div>
+  );
+}
+
+function SkillsStack({ groups }: { groups: typeof SKILLS }) {
+  return (
+    <div className="relative overflow-hidden rounded-xl border border-border bg-card/30 backdrop-blur-[2px]">
+      <div className="divide-y divide-border">
+        {groups.map((group, i) => (
+          <SkillRow key={group.label} group={group} index={i} />
+        ))}
+      </div>
+    </div>
+  );
+}
 
 /* ---------- Draggable project card stack ---------- */
 function ProjectCardStack({ projects }: { projects: typeof PROJECTS }) {
@@ -849,22 +965,7 @@ export default function Portfolio() {
 
         {/* Skills */}
         <Section id="skills" eyebrow="04 / Skills" title="Stack">
-          <div className="divide-y divide-border rounded-xl border border-border">
-            {SKILLS.map((group, i) => (
-              <Reveal key={group.label} delay={i * 0.05}>
-                <div className="grid grid-cols-[minmax(0,1fr)] gap-3 px-4 py-4 sm:grid-cols-[140px_minmax(0,1fr)] sm:items-center sm:px-5">
-                  <div className="text-xs font-medium uppercase tracking-widest text-muted-foreground">
-                    {group.label}
-                  </div>
-                  <div className="flex flex-wrap gap-1.5">
-                    {group.items.map((it) => (
-                      <Pill key={it}>{it}</Pill>
-                    ))}
-                  </div>
-                </div>
-              </Reveal>
-            ))}
-          </div>
+          <SkillsStack groups={SKILLS} />
         </Section>
 
         {/* Education */}
