@@ -340,42 +340,6 @@ function Pill({ children }: { children: React.ReactNode }) {
   );
 }
 
-/* ---------- Magnetic tilt card wrapper ---------- */
-function TiltCard({
-  children,
-  className = "",
-}: {
-  children: React.ReactNode;
-  className?: string;
-}) {
-  const reduce = useReducedMotion();
-  const x = useMotionValue(0);
-  const y = useMotionValue(0);
-  const rx = useSpring(useTransform(y, [-40, 40], [6, -6]), { stiffness: 200, damping: 15 });
-  const ry = useSpring(useTransform(x, [-40, 40], [-6, 6]), { stiffness: 200, damping: 15 });
-
-  const onMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (reduce) return;
-    const rect = e.currentTarget.getBoundingClientRect();
-    x.set(e.clientX - rect.left - rect.width / 2);
-    y.set(e.clientY - rect.top - rect.height / 2);
-  };
-  const onLeave = () => {
-    x.set(0);
-    y.set(0);
-  };
-
-  return (
-    <motion.div
-      onMouseMove={onMove}
-      onMouseLeave={onLeave}
-      style={{ rotateX: rx, rotateY: ry, transformPerspective: 800 }}
-      className={className}
-    >
-      {children}
-    </motion.div>
-  );
-}
 
 /* ---------- Draggable project card stack ---------- */
 function ProjectCardStack({ projects }: { projects: typeof PROJECTS }) {
