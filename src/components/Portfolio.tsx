@@ -849,22 +849,7 @@ export default function Portfolio() {
 
         {/* Skills */}
         <Section id="skills" eyebrow="04 / Skills" title="Stack">
-          <div className="divide-y divide-border rounded-xl border border-border">
-            {SKILLS.map((group, i) => (
-              <Reveal key={group.label} delay={i * 0.05}>
-                <div className="grid grid-cols-[minmax(0,1fr)] gap-3 px-4 py-4 sm:grid-cols-[140px_minmax(0,1fr)] sm:items-center sm:px-5">
-                  <div className="text-xs font-medium uppercase tracking-widest text-muted-foreground">
-                    {group.label}
-                  </div>
-                  <div className="flex flex-wrap gap-1.5">
-                    {group.items.map((it) => (
-                      <Pill key={it}>{it}</Pill>
-                    ))}
-                  </div>
-                </div>
-              </Reveal>
-            ))}
-          </div>
+          <SkillsStack groups={SKILLS} />
         </Section>
 
         {/* Education */}
