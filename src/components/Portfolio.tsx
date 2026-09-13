@@ -3,9 +3,6 @@ import { FluidGradientText } from "@/components/fluid-gradient-text";
 import {
   motion,
   useReducedMotion,
-  useMotionValue,
-  useTransform,
-  useSpring,
   AnimatePresence,
   type PanInfo,
 } from "framer-motion";
@@ -340,42 +337,6 @@ function Pill({ children }: { children: React.ReactNode }) {
   );
 }
 
-/* ---------- Magnetic tilt card wrapper ---------- */
-function TiltCard({
-  children,
-  className = "",
-}: {
-  children: React.ReactNode;
-  className?: string;
-}) {
-  const reduce = useReducedMotion();
-  const x = useMotionValue(0);
-  const y = useMotionValue(0);
-  const rx = useSpring(useTransform(y, [-40, 40], [6, -6]), { stiffness: 200, damping: 15 });
-  const ry = useSpring(useTransform(x, [-40, 40], [-6, 6]), { stiffness: 200, damping: 15 });
-
-  const onMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (reduce) return;
-    const rect = e.currentTarget.getBoundingClientRect();
-    x.set(e.clientX - rect.left - rect.width / 2);
-    y.set(e.clientY - rect.top - rect.height / 2);
-  };
-  const onLeave = () => {
-    x.set(0);
-    y.set(0);
-  };
-
-  return (
-    <motion.div
-      onMouseMove={onMove}
-      onMouseLeave={onLeave}
-      style={{ rotateX: rx, rotateY: ry, transformPerspective: 800 }}
-      className={className}
-    >
-      {children}
-    </motion.div>
-  );
-}
 
 /* ---------- Draggable project card stack ---------- */
 function ProjectCardStack({ projects }: { projects: typeof PROJECTS }) {
@@ -882,15 +843,6 @@ export default function Portfolio() {
           <Reveal>
             <ProjectCardStack projects={PROJECTS} />
           </Reveal>
-          <div className="mt-16 grid gap-4 sm:grid-cols-2">
-            {PROJECTS.map((p, i) => (
-              <Reveal key={p.title} delay={i * 0.08}>
-                <TiltCard>
-                  <ProjectCard project={p} />
-                </TiltCard>
-              </Reveal>
-            ))}
-          </div>
         </Section>
 
         {/* Skills */}
@@ -1064,80 +1016,5 @@ function ExperienceCard({
         ))}
       </ul>
     </div>
-  );
-}
-
-function ProjectCard({
-  project,
-}: {
-  project: (typeof PROJECTS)[number];
-}) {
-  return (
-    <a
-      href={project.href}
-      target="_blank"
-      rel="noreferrer"
-      className="group flex h-full flex-col rounded-xl border border-border bg-card p-5 transition-all duration-200 hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-[0_8px_30px_-12px_rgb(0_0_0/0.15)]"
-    >
-      <div className="flex items-start justify-between gap-3">
-        <div className="min-w-0">
-          <h3 className="text-base font-semibold tracking-tight">
-            {project.title}
-          </h3>
-          <p className="text-sm text-muted-foreground">{project.subtitle}</p>
-        </div>
-        <div className="flex shrink-0 items-center gap-1 text-muted-foreground transition-colors group-hover:text-primary">
-          <Github className="h-4 w-4" />
-          <ArrowUpRight className="h-4 w-4 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
-        </div>
-      </div>
-      <ul className="mt-4 flex-1 space-y-2 text-[14px] leading-relaxed text-foreground/80">
-        {project.bullets.map((b) => (
-          <li key={b} className="flex gap-2">
-            <span className="mt-2 inline-block h-1 w-1 shrink-0 rounded-full bg-primary/60" />
-            <span>{b}</span>
-          </li>
-        ))}
-      </ul>
-      <div className="mt-4 flex flex-wrap gap-1.5">
-        {project.tags.map((t) => (
-          <Pill key={t}>{t}</Pill>
-        ))}
-      </div>
-    </a>
-  );
-}
-
-function ContactRow({
-  icon,
-  label,
-  value,
-  href,
-}: {
-  icon: React.ReactNode;
-  label: string;
-  value: string;
-  href: string;
-}) {
-  return (
-    <a
-      href={href}
-      target={href.startsWith("http") ? "_blank" : undefined}
-      rel={href.startsWith("http") ? "noreferrer" : undefined}
-      className="group flex items-center justify-between gap-3 rounded-xl border border-border bg-card px-4 py-3 transition-all hover:-translate-y-0.5 hover:border-primary/40"
-    >
-      <div className="flex min-w-0 items-center gap-3">
-        <div className="grid h-8 w-8 shrink-0 place-items-center rounded-md border border-border text-muted-foreground group-hover:text-primary">
-          {icon}
-        </div>
-        <div className="min-w-0">
-          <div className="text-[11px] font-medium uppercase tracking-widest text-muted-foreground">
-            {label}
-          </div>
-          <div className="truncate text-sm text-foreground">{value}</div>
-        </div>
-      </div>
-      <ArrowUpRight className="h-4 w-4 shrink-0 text-muted-foreground transition-all group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-primary" />
-    </a>
   );
 }
