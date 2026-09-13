@@ -882,15 +882,6 @@ export default function Portfolio() {
           <Reveal>
             <ProjectCardStack projects={PROJECTS} />
           </Reveal>
-          <div className="mt-16 grid gap-4 sm:grid-cols-2">
-            {PROJECTS.map((p, i) => (
-              <Reveal key={p.title} delay={i * 0.08}>
-                <TiltCard>
-                  <ProjectCard project={p} />
-                </TiltCard>
-              </Reveal>
-            ))}
-          </div>
         </Section>
 
         {/* Skills */}
