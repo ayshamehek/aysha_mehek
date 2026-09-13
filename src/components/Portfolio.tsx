@@ -3,9 +3,6 @@ import { FluidGradientText } from "@/components/fluid-gradient-text";
 import {
   motion,
   useReducedMotion,
-  useMotionValue,
-  useTransform,
-  useSpring,
   AnimatePresence,
   type PanInfo,
 } from "framer-motion";
