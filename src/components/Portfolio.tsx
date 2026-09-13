@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { FluidGradientText } from "@/components/fluid-gradient-text";
 import {
   motion,
