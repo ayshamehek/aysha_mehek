@@ -549,8 +549,13 @@ function ActivityGraph({
   theme: "light" | "dark";
   accentHex: string;
 }) {
+  const c = accentHex.replace("#", "");
+  const text = theme === "dark" ? "e5e7eb" : "1f2937";
   const src =
-    "https://private-user-images.githubusercontent.com/297779047/638378720-e4ab2415-bea7-4ce1-b658-8af78d8ba0c8.gif?jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTUiLCJleHAiOjE3ODkzMTA5MDMsIm5iZiI6MTc4OTMxMDYwMywicGF0aCI6Ii8yOTc3NzkwNDcvNjM4Mzc4NzIwLWU0YWIyNDE1LWJlYTctNGNlMS1iNjU4LThhZjc4ZDhiYTBjOC5naWY_WC1BbXotQWxnb3JpdGhtPUFXUzQtSE1BQy1TSEEyNTYmWC1BbXotQ3JlZGVudGlhbD1BS0lBVkNPRFlMU0E1M1BRSzRaQSUyRjIwMjYwOTEzJTJGdXMtZWFzdC0xJTJGczMlMkZhd3M0X3JlcXVlc3QmWC1BbXotRGF0ZT0yMDI2MDkxM1QxNDQzMjNaJlgtQW16LUV4cGlyZXM9MzAwJlgtQW16LVNpZ25hdHVyZT02YjExYzkyZThmOGViNGZlMGRkNDU0YmJkNzU3NTgyZDk2MDRiOWYwMjIzOTEwMWJiYjQyNTI1MDMwY2Y0NWIyJlgtQW16LVNpZ25lZEhlYWRlcnM9aG9zdCZyZXNwb25zZS1jb250ZW50LXR5cGU9aW1hZ2UlMkZnaWYifQ.XUSPUs6JiqCUk1kbeGDTf4sJEEGYbvNbtxnHXZxrJ9k";
+    `https://github-readme-activity-graph.vercel.app/graph` +
+    `?username=ayshamehek&bg_color=00000000&hide_border=true&area=true` +
+    `&color=${text}&title_color=${c}&line=${c}&point=${c}&custom_title=Contribution%20Graph`;
+
 
 
   return (
