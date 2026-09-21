@@ -27,7 +27,7 @@ import { HoverEffect } from "@/components/ui/card-hover-effect";
 import { CanvasText } from "@/components/ui/canvas-text";
 import { NavSparkles } from "@/components/ui/sparkles";
 import { CloudShader } from "@/components/ui/cloud-shader";
-import profileAsset from "@/assets/profile.png.asset.json";
+import profileAsset from "@/assets/profile.jpeg.asset.json";
 import watermelonCursor from "@/assets/watermelon-cursor.png.asset.json";
 import kittyCursor from "@/assets/kitty-cursor.png.asset.json";
 
