@@ -115,7 +115,7 @@ void main(){
       float fi = float(i);
       vec2 a = boltPoint(fi, cycle, rootX, aspect);
       vec2 b = boltPoint(fi + 1.0, cycle, rootX, aspect);
-      float visible = step(0.83 - (fi + 1.0) * 0.046, 0.83 - clamp((phase - 0.28) / 0.09, 0.0, 1.0) * 0.64);
+      float visible = step(0.83 - clamp((phase - 0.28) / 0.09, 0.0, 1.0) * 0.64, 0.83 - (fi + 1.0) * 0.046);
       trunkDist = min(trunkDist, mix(10.0, segmentDistance(boltUV, a, b), visible));
     }
     // Three narrow forks split off the main channel, tapering into hairline twigs.
