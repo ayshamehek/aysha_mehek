@@ -54,6 +54,13 @@ float segmentDistance(vec2 p, vec2 a, vec2 b){
   return length(pa - ba * h);
 }
 
+// Stable, seeded bends let each strike grow a different jagged channel.
+vec2 boltPoint(float stepIndex, float seed, float rootX, float aspect){
+  float bend = (hash(vec2(seed + 7.1, stepIndex * 3.73)) - 0.5) * 0.052;
+  float wander = sin(stepIndex * 0.57 + seed * 2.7) * 0.035;
+  return vec2((rootX + bend + wander) * aspect, 0.83 - stepIndex * 0.046);
+}
+
 void main(){
   vec2 uv = gl_FragCoord.xy / uRes.xy;
   vec2 st = vec2(uv.x * (uRes.x / uRes.y), uv.y);
@@ -89,25 +96,59 @@ void main(){
   col = mix(col, uTint, shade * mix(0.2, 0.11, uDark));
   col += mix(vec3(1.0), uTint, uDark * 0.35) * edge * mix(0.5, 0.32, uDark);
 
-  // A brief branching bolt emerges between cloud layers every few seconds.
-  float cycle = floor(t * 0.18);
-  float phase = fract(t * 0.18);
-  float strike = smoothstep(0.035, 0.075, phase) * (1.0 - smoothstep(0.15, 0.22, phase));
-  strike += 0.55 * smoothstep(0.24, 0.27, phase) * (1.0 - smoothstep(0.3, 0.34, phase));
-  float rootX = 0.28 + hash(vec2(cycle, 4.7)) * 0.44;
-  vec2 p0 = vec2(rootX, 0.77);
-  vec2 p1 = vec2(rootX + (hash(vec2(cycle, 1.2)) - 0.5) * 0.055, 0.66);
-  vec2 p2 = vec2(rootX + (hash(vec2(cycle, 2.3)) - 0.5) * 0.09, 0.54);
-  vec2 p3 = vec2(rootX + (hash(vec2(cycle, 3.4)) - 0.5) * 0.13, 0.39);
-  float boltDist = min(min(segmentDistance(uv, p0, p1), segmentDistance(uv, p1, p2)), segmentDistance(uv, p2, p3));
-  float bolt = exp(-boltDist * 780.0) * strike;
-  float boltGlow = exp(-boltDist * 72.0) * strike;
-  float cloudGate = mix(0.42, 1.0, smoothstep(0.04, 0.52, d));
-  vec3 lightning = mix(vec3(0.93, 0.98, 1.0), uTint, 0.32);
-  col += lightning * (bolt * 3.0 + boltGlow * 0.68) * cloudGate;
-  col += lightning * strike * d * 0.14;
+  // Fast leader, two uneven return strokes, and a faint afterglow.
+  float cycle = floor(uTime / 8.2);
+  float phase = mod(uTime, 8.2);
+  float first = smoothstep(0.28, 0.305, phase) * (1.0 - smoothstep(0.37, 0.43, phase));
+  float second = smoothstep(0.48, 0.495, phase) * (1.0 - smoothstep(0.56, 0.62, phase));
+  float afterglow = smoothstep(0.65, 0.67, phase) * (1.0 - smoothstep(0.73, 0.83, phase));
+  float strike = max(first, max(second * 0.8, afterglow * 0.3));
+  float boltGlow = 0.0;
+  if (strike > 0.001){
+    float aspect = uRes.x / uRes.y;
+    vec2 boltUV = vec2(uv.x * aspect, uv.y);
+    float rootX = 0.23 + hash(vec2(cycle, 4.7)) * 0.54;
+    float trunkDist = 10.0;
+    float branchDist = 10.0;
+    float branchCore = 0.0;
+    for (int i = 0; i < 13; i++){
+      float fi = float(i);
+      vec2 a = boltPoint(fi, cycle, rootX, aspect);
+      vec2 b = boltPoint(fi + 1.0, cycle, rootX, aspect);
+      float visible = step(0.83 - clamp((phase - 0.28) / 0.09, 0.0, 1.0) * 0.64, 0.83 - (fi + 1.0) * 0.046);
+      trunkDist = min(trunkDist, mix(10.0, segmentDistance(boltUV, a, b), visible));
+    }
+    // Three narrow forks split off the main channel, tapering into hairline twigs.
+    for (int fork = 0; fork < 3; fork++){
+      float f = float(fork);
+      float origin = 3.0 + f * 3.0;
+      vec2 previous = boltPoint(origin, cycle, rootX, aspect);
+      float direction = mod(f, 2.0) < 1.0 ? -1.0 : 1.0;
+      for (int j = 1; j <= 5; j++){
+        float fj = float(j);
+        vec2 next = previous + vec2(
+          direction * (0.014 + hash(vec2(cycle + f * 5.3, fj)) * 0.017) * aspect,
+          -0.026 - hash(vec2(cycle + f * 7.1, fj + 2.0)) * 0.016
+        );
+        float dist = segmentDistance(boltUV, previous, next);
+        branchDist = min(branchDist, dist);
+        branchCore = max(branchCore, exp(-dist * (850.0 + fj * 310.0)) * (1.0 - fj * 0.12));
+        previous = next;
+      }
+    }
+    float core = exp(-trunkDist * 1250.0) + branchCore * 0.7;
+    float sheath = exp(-trunkDist * 260.0) + exp(-branchDist * 380.0) * 0.45;
+    boltGlow = exp(-trunkDist * 44.0) + exp(-branchDist * 75.0) * 0.4;
+    vec3 lightning = mix(vec3(0.94, 0.98, 1.0), uTint, 0.16);
+    float cloudGate = mix(0.66, 1.0, smoothstep(0.05, 0.5, d));
+    col += lightning * (core * 2.8 + sheath * 0.86 + boltGlow * 0.3) * strike * cloudGate;
+    vec2 source = boltPoint(0.0, cycle, rootX, aspect);
+    float cloudFlash = exp(-length((boltUV - source) * vec2(2.2, 3.0)) * 5.0);
+    col += lightning * (d * 0.22 + cloudFlash * 0.15) * strike;
+    boltGlow *= strike;
+  }
 
-  float alpha = clamp(d * mix(0.9, 0.72, uDark) + edge * 0.28 + boltGlow * 0.42, 0.0, 1.0);
+  float alpha = clamp(d * mix(0.9, 0.72, uDark) + edge * 0.28 + boltGlow * 0.65, 0.0, 1.0);
   gl_FragColor = vec4(col, alpha);
 }
 
