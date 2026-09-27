@@ -8,3 +8,5 @@
 > Commits you push to the connected branch sync back to Lovable and show up in
 > the editor, so keep the branch in a working state.
 <!-- LOVABLE:END -->
+
+- Keep the site-wide starfield in its own canvas component layered inside the fixed dot-grid backdrop, so it spans every section without blocking interaction.

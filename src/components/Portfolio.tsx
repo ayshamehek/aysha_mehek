@@ -27,6 +27,7 @@ import { HoverEffect } from "@/components/ui/card-hover-effect";
 import { CanvasText } from "@/components/ui/canvas-text";
 import { NavSparkles } from "@/components/ui/sparkles";
 import { CloudShader } from "@/components/ui/cloud-shader";
+import { Starfield } from "@/components/ui/starfield";
 import profileAsset from "@/assets/profile.jpeg.asset.json";
 import watermelonCursor from "@/assets/watermelon-cursor.png.asset.json";
 import kittyCursor from "@/assets/kitty-cursor.png.asset.json";
@@ -238,6 +239,7 @@ function DotGridBackground({ theme }: { theme: "light" | "dark" }) {
           background: `radial-gradient(closest-side, color-mix(in oklab, var(--primary) ${theme === "dark" ? 18 : 10}%, transparent), transparent 70%)`,
         }}
       />
+      <Starfield />
     </div>
   );
 }
