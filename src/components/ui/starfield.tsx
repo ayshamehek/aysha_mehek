@@ -33,7 +33,7 @@ export function Starfield() {
       canvas.width = Math.round(width * dpr);
       canvas.height = Math.round(height * dpr);
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      const count = Math.round((width * height / 1_000_000) * 135);
+      const count = Math.round((width * height / 1_000_000) * 240);
       stars = Array.from({ length: count }, (_, i) => ({
         x: Math.random() * width,
         y: Math.random() * height,
