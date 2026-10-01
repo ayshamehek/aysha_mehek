@@ -18,6 +18,7 @@ uniform vec3 uCloud;
 uniform vec3 uTint;
 uniform vec2 uPointer;
 uniform float uDark;
+uniform float uLightning;
 
 float hash(vec2 p){
   p = fract(p * vec2(123.34, 456.21));
@@ -102,7 +103,7 @@ void main(){
   float first = smoothstep(0.28, 0.305, phase) * (1.0 - smoothstep(0.37, 0.43, phase));
   float second = smoothstep(0.48, 0.495, phase) * (1.0 - smoothstep(0.56, 0.62, phase));
   float afterglow = smoothstep(0.65, 0.67, phase) * (1.0 - smoothstep(0.73, 0.83, phase));
-  float strike = max(first, max(second * 0.8, afterglow * 0.3));
+  float strike = max(first, max(second * 0.8, afterglow * 0.3)) * uLightning;
   float boltGlow = 0.0;
   if (strike > 0.001){
     float aspect = uRes.x / uRes.y;
@@ -191,12 +192,14 @@ export function CloudShader({
   count = 4,
   density = 0.5,
   opacity = 0.55,
+  lightningIntensity = 1,
 }: {
   className?: string;
   speed?: number;
   count?: number;
   density?: number;
   opacity?: number;
+  lightningIntensity?: number;
 }) {
   const ref = useRef<HTMLCanvasElement | null>(null);
 
@@ -244,10 +247,12 @@ export function CloudShader({
     const uTint = u("uTint");
     const uPointer = u("uPointer");
     const uDark = u("uDark");
+    const uLightning = u("uLightning");
 
     gl.uniform1f(uSpeed, speed);
     gl.uniform1f(uCount, Math.max(1, Math.min(4, count)));
     gl.uniform1f(uDensity, density);
+    gl.uniform1f(uLightning, Math.max(0, Math.min(1.6, lightningIntensity)));
     gl.uniform2f(uPointer, 0.5, 0.5);
 
     const applyTheme = () => {
@@ -321,7 +326,7 @@ export function CloudShader({
       gl.deleteShader(vertexShader);
       gl.deleteShader(fragmentShader);
     };
-  }, [speed, count, density]);
+  }, [speed, count, density, lightningIntensity]);
 
   return (
     <canvas
