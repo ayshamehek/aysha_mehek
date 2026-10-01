@@ -190,6 +190,10 @@ const LIGHTNING_LEVELS = [
 
 type LightningLevel = (typeof LIGHTNING_LEVELS)[number]["name"];
 
+function isLightningLevel(value: string | null): value is LightningLevel {
+  return LIGHTNING_LEVELS.some((option) => option.name === value);
+}
+
 /* ---------- Dot grid background ---------- */
 function DotGridBackground({
   theme,
@@ -785,8 +789,8 @@ export default function Portfolio() {
 
   useEffect(() => {
     const stored = localStorage.getItem("lightning-intensity");
-    if (LIGHTNING_LEVELS.some((option) => option.name === stored)) {
-      setLightningLevel(stored as LightningLevel);
+    if (isLightningLevel(stored)) {
+      setLightningLevel(stored);
     }
   }, []);
 
