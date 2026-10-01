@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { FluidGradientText } from "@/components/fluid-gradient-text";
 import {
   motion,
@@ -192,6 +192,22 @@ type LightningLevel = (typeof LIGHTNING_LEVELS)[number]["name"];
 
 function isLightningLevel(value: string | null): value is LightningLevel {
   return LIGHTNING_LEVELS.some((option) => option.name === value);
+}
+
+const LIGHTNING_STORAGE_EVENT = "lightning-intensity-change";
+
+function getLightningSnapshot(): LightningLevel {
+  const stored = localStorage.getItem("lightning-intensity");
+  return isLightningLevel(stored) ? stored : "Normal";
+}
+
+function subscribeToLightning(callback: () => void) {
+  window.addEventListener("storage", callback);
+  window.addEventListener(LIGHTNING_STORAGE_EVENT, callback);
+  return () => {
+    window.removeEventListener("storage", callback);
+    window.removeEventListener(LIGHTNING_STORAGE_EVENT, callback);
+  };
 }
 
 /* ---------- Dot grid background ---------- */
@@ -785,18 +801,15 @@ export default function Portfolio() {
   const { accent, change: changeAccent } = useAccent(theme);
   const active = useScrollSpy(NAV.map((n) => n.id));
   const [menuOpen, setMenuOpen] = useState(false);
-  const [lightningLevel, setLightningLevel] = useState<LightningLevel>("Normal");
-
-  useEffect(() => {
-    const stored = localStorage.getItem("lightning-intensity");
-    if (isLightningLevel(stored)) {
-      setLightningLevel(stored);
-    }
-  }, []);
+  const lightningLevel = useSyncExternalStore(
+    subscribeToLightning,
+    getLightningSnapshot,
+    () => "Normal",
+  );
 
   const changeLightning = (level: LightningLevel) => {
-    setLightningLevel(level);
     localStorage.setItem("lightning-intensity", level);
+    window.dispatchEvent(new Event(LIGHTNING_STORAGE_EVENT));
   };
 
   const lightningIntensity =
