@@ -804,7 +804,7 @@ export default function Portfolio() {
   const lightningLevel = useSyncExternalStore(
     subscribeToLightning,
     getLightningSnapshot,
-    () => "Normal",
+    (): LightningLevel => "Normal",
   );
 
   const changeLightning = (level: LightningLevel) => {
