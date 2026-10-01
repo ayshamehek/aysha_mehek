@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { FluidGradientText } from "@/components/fluid-gradient-text";
 import {
   motion,
@@ -18,6 +18,8 @@ import {
   Menu,
   X,
   Palette,
+  Zap,
+  ZapOff,
   GripVertical,
   Sparkles,
 } from "lucide-react";
@@ -179,8 +181,43 @@ const ACCENTS = [
   { name: "Cyan", light: "oklch(0.6 0.13 210)", dark: "oklch(0.75 0.13 210)", swatch: "#06b6d4" },
 ];
 
+const LIGHTNING_LEVELS = [
+  { name: "Off", value: 0 },
+  { name: "Subtle", value: 0.45 },
+  { name: "Normal", value: 1 },
+  { name: "Vivid", value: 1.45 },
+] as const;
+
+type LightningLevel = (typeof LIGHTNING_LEVELS)[number]["name"];
+
+function isLightningLevel(value: string | null): value is LightningLevel {
+  return LIGHTNING_LEVELS.some((option) => option.name === value);
+}
+
+const LIGHTNING_STORAGE_EVENT = "lightning-intensity-change";
+
+function getLightningSnapshot(): LightningLevel {
+  const stored = localStorage.getItem("lightning-intensity");
+  return isLightningLevel(stored) ? stored : "Normal";
+}
+
+function subscribeToLightning(callback: () => void) {
+  window.addEventListener("storage", callback);
+  window.addEventListener(LIGHTNING_STORAGE_EVENT, callback);
+  return () => {
+    window.removeEventListener("storage", callback);
+    window.removeEventListener(LIGHTNING_STORAGE_EVENT, callback);
+  };
+}
+
 /* ---------- Dot grid background ---------- */
-function DotGridBackground({ theme }: { theme: "light" | "dark" }) {
+function DotGridBackground({
+  theme,
+  lightningIntensity,
+}: {
+  theme: "light" | "dark";
+  lightningIntensity: number;
+}) {
   const dotAlpha = theme === "dark" ? 0.45 : 0.38;
   const gridAlpha = theme === "dark" ? 0.12 : 0.1;
   return (
@@ -196,6 +233,7 @@ function DotGridBackground({ theme }: { theme: "light" | "dark" }) {
           count={4}
           density={theme === "dark" ? 0.62 : 0.74}
           opacity={theme === "dark" ? 0.52 : 0.78}
+          lightningIntensity={lightningIntensity}
         />
 
       </div>
@@ -630,6 +668,73 @@ function ColorPicker({
   );
 }
 
+function LightningControl({
+  level,
+  onChange,
+}: {
+  level: LightningLevel;
+  onChange: (level: LightningLevel) => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const current = LIGHTNING_LEVELS.find((option) => option.name === level) ?? LIGHTNING_LEVELS[2];
+
+  return (
+    <div className="relative">
+      <Button
+        type="button"
+        size="icon"
+        variant="outline"
+        onClick={() => setOpen((value) => !value)}
+        aria-label={`Lightning: ${current.name}`}
+        aria-haspopup="menu"
+        aria-expanded={open}
+        title={`Lightning: ${current.name}`}
+        className="text-muted-foreground shadow-none hover:text-foreground"
+      >
+        {current.value === 0 ? <ZapOff /> : <Zap className={current.value > 1 ? "fill-primary/20 text-primary" : undefined} />}
+      </Button>
+      <AnimatePresence>
+        {open && (
+          <>
+            <div className="fixed inset-0 z-30" onClick={() => setOpen(false)} aria-hidden />
+            <motion.div
+              role="menu"
+              aria-label="Lightning intensity"
+              initial={{ opacity: 0, y: -6, scale: 0.96 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: -6, scale: 0.96 }}
+              transition={{ duration: 0.15 }}
+              className="absolute right-0 z-40 mt-2 w-40 rounded-lg border border-border bg-popover p-1.5 shadow-lg"
+            >
+              <div className="px-2 py-1.5 text-[10px] font-medium uppercase tracking-widest text-muted-foreground">
+                Lightning
+              </div>
+              {LIGHTNING_LEVELS.map((option) => (
+                <Button
+                  key={option.name}
+                  type="button"
+                  role="menuitemradio"
+                  aria-checked={level === option.name}
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => {
+                    onChange(option.name);
+                    setOpen(false);
+                  }}
+                  className={`w-full justify-between px-2 ${level === option.name ? "bg-primary/10 text-primary" : "text-muted-foreground"}`}
+                >
+                  <span>{option.name}</span>
+                  <span className={`h-1.5 w-1.5 rounded-full ${level === option.name ? "bg-primary" : "bg-border"}`} />
+                </Button>
+              ))}
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
+
 function Section({
   id,
   eyebrow,
@@ -696,10 +801,23 @@ export default function Portfolio() {
   const { accent, change: changeAccent } = useAccent(theme);
   const active = useScrollSpy(NAV.map((n) => n.id));
   const [menuOpen, setMenuOpen] = useState(false);
+  const lightningLevel = useSyncExternalStore(
+    subscribeToLightning,
+    getLightningSnapshot,
+    (): LightningLevel => "Normal",
+  );
+
+  const changeLightning = (level: LightningLevel) => {
+    localStorage.setItem("lightning-intensity", level);
+    window.dispatchEvent(new Event(LIGHTNING_STORAGE_EVENT));
+  };
+
+  const lightningIntensity =
+    LIGHTNING_LEVELS.find((option) => option.name === lightningLevel)?.value ?? 1;
 
   return (
     <div className="relative min-h-screen text-foreground">
-      <DotGridBackground theme={theme} />
+      <DotGridBackground theme={theme} lightningIntensity={lightningIntensity} />
       <KawaiiCursors />
       {/* Nav */}
       <header className="sticky top-0 z-40 border-b border-border/70 bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -734,6 +852,7 @@ export default function Portfolio() {
           </nav>
           <div className="flex items-center gap-1">
             <ColorPicker accent={accent} onChange={changeAccent} />
+            <LightningControl level={lightningLevel} onChange={changeLightning} />
             <button
               onClick={toggle}
               aria-label="Toggle theme"
