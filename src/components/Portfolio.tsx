@@ -309,8 +309,8 @@ function useAccent(theme: "light" | "dark") {
 
 function KawaiiCursors() {
   useEffect(() => {
-    const arrow = `url("${watermelonCursor.url}") 4 4, auto`;
-    const pointer = `url("${kittyCursor.url}") 14 14, pointer`;
+    const arrow = `url("${watermelonCursor.url}") 3 3, auto`;
+    const pointer = `url("${kittyCursor.url}") 10 10, pointer`;
     const id = "kawaii-cursor-style";
     let styleEl = document.getElementById(id) as HTMLStyleElement | null;
     if (!styleEl) {
