@@ -51,14 +51,14 @@ float fbm(vec2 p){
 // Large rounded billows, smaller turbulent lobes, and fine edge erosion.
 float cloudField(vec2 p, float depth, float time){
   vec2 drift = vec2(time * 0.035, -time * 0.006);
-  vec2 q = p * 2.25 + drift + vec2(depth * 0.3, depth * 0.12);
+  vec2 q = p * 4.8 + drift + vec2(depth * 0.5, depth * 0.2);
   vec2 warp = vec2(noise(q * 0.7 + 8.2), noise(q * 0.7 + 21.4));
   q += (warp - 0.5) * 0.8;
   float broad = noise(q * 0.65);
   float lobes = noise(q * 1.8);
   float fine = fbm(q * 4.0);
-  float shape = broad * 0.68 + lobes * 0.24 + fine * 0.08;
-  float threshold = 0.53 - uDensity * 0.16;
+  float shape = broad * 0.58 + lobes * 0.3 + fine * 0.12;
+  float threshold = 0.48 - uDensity * 0.16;
   float envelope = smoothstep(0.0, 0.2, depth) * (1.0 - smoothstep(0.6, 1.0, depth));
   return max(shape - threshold - (1.0 - envelope) * 0.075, 0.0) * 5.5;
 }
