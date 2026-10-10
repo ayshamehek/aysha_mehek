@@ -229,10 +229,10 @@ function DotGridBackground({
       <div className="absolute inset-0">
         <CloudShader
           className="h-full w-full"
-          speed={0.5}
+          speed={0.4}
           count={4}
-          density={theme === "dark" ? 0.62 : 0.74}
-          opacity={theme === "dark" ? 0.52 : 0.78}
+          density={theme === "dark" ? 0.78 : 0.88}
+          opacity={theme === "dark" ? 0.66 : 0.88}
           lightningIntensity={lightningIntensity}
         />
 
