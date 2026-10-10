@@ -70,32 +70,53 @@ void main(){
   st += (uPointer - 0.5) * vec2(0.055, 0.025);
   float acc = 0.0;
   float w = 0.0;
+  // Domain-warped, billowy density so shapes read as real cumulus rather than flat noise.
+  vec2 lightDir = normalize(vec2(-0.35, 1.0)) * 0.035;
+  float densNow = 0.0;
+  float densLit = 0.0;
   for (int i = 0; i < 4; i++){
     float fi = float(i);
     if (fi >= uCount) break;
     float scale = 1.1 + fi * 1.05;
     float drift = t * (0.05 + fi * 0.03);
-    float layer = fbm(st * scale + vec2(drift, -drift * 0.12 + fi * 3.1));
+    vec2 q = st * scale + vec2(drift, -drift * 0.12 + fi * 3.1);
+    vec2 warp = vec2(fbm(q * 0.6 + vec2(1.7, 9.2) + t * 0.02), fbm(q * 0.6 + vec2(8.3, 2.8) - t * 0.015));
+    vec2 qw = q + (warp - 0.5) * 1.1;
+    float base = fbm(qw);
+    float puff = 1.0 - abs(noise(qw * 3.1) * 2.0 - 1.0);
+    float layer = base * 0.82 + puff * 0.18;
+    float lit = fbm(qw + lightDir * scale * 6.0);
     float weight = 1.0 / (1.0 + fi * 0.6);
-    acc += layer * weight;
+    densNow += layer * weight;
+    densLit += (lit * 0.82 + puff * 0.18) * weight;
     w += weight;
   }
-  float clouds = acc / max(w, 0.001);
+  float clouds = densNow / max(w, 0.001);
+  float cloudsLit = densLit / max(w, 0.001);
 
-  // Distinct layered billows with enough definition on near-white surfaces.
   float band = smoothstep(-0.08, 0.26, uv.y);
   float lo = 0.48 - uDensity * 0.2;
-  float d = smoothstep(lo, lo + 0.19, clouds);
-  d = pow(d, 1.08) * mix(0.5, 1.0, band);
+  float d = smoothstep(lo, lo + 0.22, clouds);
+  float erosion = fbm(st * 9.0 + vec2(t * 0.06, -t * 0.02));
+  d *= smoothstep(0.0, 0.35, d - (erosion - 0.5) * 0.22 * (1.0 - d));
+  d = clamp(d * mix(0.5, 1.0, band), 0.0, 1.0);
 
-  // luminous rim where the billows break
-  float edge = smoothstep(lo - 0.04, lo + 0.12, clouds) - smoothstep(lo + 0.12, lo + 0.42, clouds);
+  // Self-shadowing: density toward the light darkens the underside (Beer-Lambert).
+  float occl = smoothstep(lo, lo + 0.3, cloudsLit);
+  float thickness = smoothstep(lo + 0.05, lo + 0.45, clouds);
+  float transmit = exp(-occl * 2.2);
+  float silver = smoothstep(lo - 0.02, lo + 0.1, clouds) * (1.0 - smoothstep(lo + 0.1, lo + 0.3, clouds));
+  float edge = silver;
 
-  float detail = fbm(st * 5.2 - vec2(t * 0.035, 2.7));
-  float shade = smoothstep(0.34, 0.78, detail) * d;
-  vec3 col = mix(uSky, uCloud, clamp(d * 1.28, 0.0, 1.0));
-  col = mix(col, uTint, shade * mix(0.2, 0.11, uDark));
-  col += mix(vec3(1.0), uTint, uDark * 0.35) * edge * mix(0.5, 0.32, uDark);
+  vec3 shadowCol = mix(uCloud * vec3(0.62, 0.66, 0.74), uCloud * vec3(0.32, 0.34, 0.42), uDark);
+  shadowCol = mix(shadowCol, uTint * 0.5 + shadowCol * 0.5, 0.12);
+  vec3 litCol = mix(uCloud * 1.06, uCloud + vec3(0.04), uDark);
+  vec3 body = mix(shadowCol, litCol, clamp(transmit * 1.25 + 0.15, 0.0, 1.0));
+  body = mix(body, shadowCol * 0.9, thickness * 0.35);
+  float detail = fbm(st * 14.0 - vec2(t * 0.05, 2.7));
+  body *= 0.94 + detail * 0.12;
+  vec3 col = mix(uSky, body, clamp(d * 1.2, 0.0, 1.0));
+  col += mix(vec3(1.0, 0.98, 0.95), uTint, uDark * 0.3) * silver * mix(0.42, 0.26, uDark);
 
   // Fast leader, two uneven return strokes, and a faint afterglow.
   float cycle = floor(uTime / 8.2);
