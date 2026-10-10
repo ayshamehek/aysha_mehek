@@ -104,7 +104,7 @@ void main(){
   // Self-shadowing: density toward the light darkens the underside (Beer-Lambert).
   float occl = smoothstep(lo, lo + 0.3, cloudsLit);
   float thickness = smoothstep(lo + 0.05, lo + 0.45, clouds);
-  float transmit = exp(-occl * 2.2);
+  float transmit = exp(-occl * 3.0);
   float silver = smoothstep(lo - 0.02, lo + 0.1, clouds) * (1.0 - smoothstep(lo + 0.1, lo + 0.3, clouds));
   float edge = silver;
 
@@ -112,9 +112,11 @@ void main(){
   shadowCol = mix(shadowCol, uTint * 0.5 + shadowCol * 0.5, 0.12);
   vec3 litCol = mix(uCloud * 1.06, uCloud + vec3(0.04), uDark);
   vec3 body = mix(shadowCol, litCol, clamp(transmit * 1.25 + 0.15, 0.0, 1.0));
-  body = mix(body, shadowCol * 0.9, thickness * 0.35);
+  body = mix(body, shadowCol * 0.82, thickness * 0.5);
+  float topLight = smoothstep(0.2, 0.9, uv.y);
+  body = mix(body * 0.9, body * 1.08, topLight);
   float detail = fbm(st * 14.0 - vec2(t * 0.05, 2.7));
-  body *= 0.94 + detail * 0.12;
+  body *= 0.9 + detail * 0.2;
   vec3 col = mix(uSky, body, clamp(d * 1.2, 0.0, 1.0));
   col += mix(vec3(1.0, 0.98, 0.95), uTint, uDark * 0.3) * silver * mix(0.42, 0.26, uDark);
 
