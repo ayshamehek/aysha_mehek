@@ -3,6 +3,8 @@ import { FluidGradientText } from "@/components/fluid-gradient-text";
 import {
   motion,
   useReducedMotion,
+  useMotionValue,
+  useSpring,
   AnimatePresence,
   type PanInfo,
 } from "framer-motion";
@@ -369,6 +371,73 @@ function Reveal({
   );
 }
 
+function MagneticButton({ children }: { children: React.ReactNode }) {
+  const reduceMotion = useReducedMotion();
+  const ref = useRef<HTMLDivElement>(null);
+  const x = useMotionValue(0);
+  const y = useMotionValue(0);
+  const springX = useSpring(x, { stiffness: 260, damping: 22, mass: 0.25 });
+  const springY = useSpring(y, { stiffness: 260, damping: 22, mass: 0.25 });
+
+  return (
+    <motion.div
+      ref={ref}
+      className="inline-flex"
+      style={reduceMotion ? undefined : { x: springX, y: springY }}
+      onPointerMove={(event) => {
+        if (reduceMotion || event.pointerType !== "mouse") return;
+        const rect = ref.current?.getBoundingClientRect();
+        if (!rect) return;
+        x.set(Math.max(-6, Math.min(6, (event.clientX - rect.left - rect.width / 2) * 0.12)));
+        y.set(Math.max(-4, Math.min(4, (event.clientY - rect.top - rect.height / 2) * 0.12)));
+      }}
+      onPointerLeave={() => {
+        x.set(0);
+        y.set(0);
+      }}
+      whileTap={reduceMotion ? undefined : { scale: 0.97 }}
+    >
+      {children}
+    </motion.div>
+  );
+}
+
+function PointerTilt({ children }: { children: React.ReactNode }) {
+  const reduceMotion = useReducedMotion();
+  const ref = useRef<HTMLDivElement>(null);
+  const rotateX = useMotionValue(0);
+  const rotateY = useMotionValue(0);
+  const springX = useSpring(rotateX, { stiffness: 220, damping: 22 });
+  const springY = useSpring(rotateY, { stiffness: 220, damping: 22 });
+
+  return (
+    <motion.div
+      ref={ref}
+      className="h-full w-full"
+      style={
+        reduceMotion
+          ? undefined
+          : { rotateX: springX, rotateY: springY, transformPerspective: 700 }
+      }
+      onPointerMove={(event) => {
+        if (reduceMotion || event.pointerType !== "mouse") return;
+        const rect = ref.current?.getBoundingClientRect();
+        if (!rect) return;
+        const px = (event.clientX - rect.left) / rect.width - 0.5;
+        const py = (event.clientY - rect.top) / rect.height - 0.5;
+        rotateX.set(-py * 5);
+        rotateY.set(px * 5);
+      }}
+      onPointerLeave={() => {
+        rotateX.set(0);
+        rotateY.set(0);
+      }}
+    >
+      {children}
+    </motion.div>
+  );
+}
+
 function Pill({ children }: { children: React.ReactNode }) {
   return (
     <span className="inline-flex items-center rounded-full border border-border bg-muted/40 px-2.5 py-1 text-xs font-medium text-muted-foreground transition-colors hover:border-primary/40 hover:text-foreground">
@@ -554,46 +623,70 @@ function StackedProjectCard({
   project: (typeof PROJECTS)[number];
   isTop: boolean;
 }) {
+  const reduceMotion = useReducedMotion();
+  const ref = useRef<HTMLDivElement>(null);
+  const [spot, setSpot] = useState<{ x: number; y: number } | null>(null);
+
   return (
     <div
-      className={`flex h-full flex-col overflow-hidden rounded-2xl border border-border bg-card p-6 shadow-[0_20px_60px_-30px_rgb(0_0_0/0.25)] transition-colors ${
+      ref={ref}
+      onPointerMove={(event) => {
+        if (!isTop || reduceMotion || event.pointerType !== "mouse") return;
+        const rect = ref.current?.getBoundingClientRect();
+        if (!rect) return;
+        setSpot({ x: event.clientX - rect.left, y: event.clientY - rect.top });
+      }}
+      onPointerLeave={() => setSpot(null)}
+      className={`relative isolate flex h-full flex-col overflow-hidden rounded-2xl border border-border bg-card p-6 shadow-[0_20px_60px_-30px_rgb(0_0_0/0.25)] transition-colors ${
         isTop ? "cursor-grab active:cursor-grabbing" : "pointer-events-none"
       }`}
     >
-      <div className="flex items-start justify-between gap-3">
-        <div className="min-w-0">
-          <div className="mb-2 inline-flex items-center gap-1.5 rounded-full border border-border bg-muted/40 px-2 py-0.5 text-[10px] font-medium uppercase tracking-widest text-muted-foreground">
-            <Sparkles className="h-3 w-3 text-primary" /> Featured
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0 z-0 opacity-0 transition-opacity duration-300"
+        style={{
+          opacity: spot ? 1 : 0,
+          background: spot
+            ? `radial-gradient(260px 180px at ${spot.x}px ${spot.y}px, color-mix(in oklab, var(--primary) 15%, transparent), transparent 72%)`
+            : undefined,
+        }}
+      />
+      <div className="relative z-10 flex h-full flex-col">
+        <div className="flex items-start justify-between gap-3">
+          <div className="min-w-0">
+            <div className="mb-2 inline-flex items-center gap-1.5 rounded-full border border-border bg-muted/40 px-2 py-0.5 text-[10px] font-medium uppercase tracking-widest text-muted-foreground">
+              <Sparkles className="h-3 w-3 text-primary" /> Featured
+            </div>
+            <h3 className="font-display text-2xl leading-tight sm:text-3xl">
+              {project.title}
+            </h3>
+            <p className="mt-1 text-sm text-muted-foreground">{project.subtitle}</p>
           </div>
-          <h3 className="font-display text-2xl leading-tight sm:text-3xl">
-            {project.title}
-          </h3>
-          <p className="mt-1 text-sm text-muted-foreground">{project.subtitle}</p>
+          <a
+            href={project.href}
+            target="_blank"
+            rel="noreferrer"
+            onClick={(e) => e.stopPropagation()}
+            className="inline-flex shrink-0 items-center gap-1 rounded-md border border-border p-2 text-muted-foreground transition-colors hover:border-primary/50 hover:text-primary"
+            aria-label={`Open ${project.title} on GitHub`}
+          >
+            <Github className="h-4 w-4" />
+            <ArrowUpRight className="h-4 w-4" />
+          </a>
         </div>
-        <a
-          href={project.href}
-          target="_blank"
-          rel="noreferrer"
-          onClick={(e) => e.stopPropagation()}
-          className="inline-flex shrink-0 items-center gap-1 rounded-md border border-border p-2 text-muted-foreground transition-colors hover:border-primary/50 hover:text-primary"
-          aria-label={`Open ${project.title} on GitHub`}
-        >
-          <Github className="h-4 w-4" />
-          <ArrowUpRight className="h-4 w-4" />
-        </a>
-      </div>
-      <ul className="mt-4 flex-1 space-y-2 text-[14px] leading-relaxed text-foreground/80">
-        {project.bullets.slice(0, 3).map((b) => (
-          <li key={b} className="flex gap-2">
-            <span className="mt-2 inline-block h-1 w-1 shrink-0 rounded-full bg-primary/70" />
-            <span>{b}</span>
-          </li>
-        ))}
-      </ul>
-      <div className="mt-4 flex flex-wrap gap-1.5">
-        {project.tags.map((t) => (
-          <Pill key={t}>{t}</Pill>
-        ))}
+        <ul className="mt-4 flex-1 space-y-2 text-[14px] leading-relaxed text-foreground/80">
+          {project.bullets.slice(0, 3).map((b) => (
+            <li key={b} className="flex gap-2">
+              <span className="mt-2 inline-block h-1 w-1 shrink-0 rounded-full bg-primary/70" />
+              <span>{b}</span>
+            </li>
+          ))}
+        </ul>
+        <div className="mt-4 flex flex-wrap gap-1.5">
+          {project.tags.map((t) => (
+            <Pill key={t}>{t}</Pill>
+          ))}
+        </div>
       </div>
     </div>
   );
@@ -800,6 +893,7 @@ export default function Portfolio() {
   const { theme, toggle } = useTheme();
   const { accent, change: changeAccent } = useAccent(theme);
   const active = useScrollSpy(NAV.map((n) => n.id));
+  const reduceMotion = useReducedMotion();
   const [menuOpen, setMenuOpen] = useState(false);
   const lightningLevel = useSyncExternalStore(
     subscribeToLightning,
@@ -836,15 +930,19 @@ export default function Portfolio() {
                 className={`relative rounded-md px-3 py-1.5 text-sm transition-colors ${
                   active === n.id
                     ? "text-primary"
-                    : "text-muted-foreground hover:text-foreground"
+                    : "text-muted-foreground hover:bg-primary/5 hover:text-foreground"
                 }`}
               >
                 {n.label}
                 {active === n.id && (
                   <motion.span
                     layoutId="nav-active"
-                    className="absolute inset-0 -z-10 rounded-md bg-primary/10"
-                    transition={{ type: "spring", stiffness: 350, damping: 30 }}
+                    className="absolute inset-x-3 bottom-0 h-0.5 rounded-full bg-primary"
+                    transition={
+                      reduceMotion
+                        ? { duration: 0 }
+                        : { type: "spring", stiffness: 350, damping: 30 }
+                    }
                   />
                 )}
               </a>
@@ -853,17 +951,31 @@ export default function Portfolio() {
           <div className="flex items-center gap-1">
             <ColorPicker accent={accent} onChange={changeAccent} />
             <LightningControl level={lightningLevel} onChange={changeLightning} />
-            <button
+            <Button
+              type="button"
+              variant="outline"
+              size="icon"
               onClick={toggle}
               aria-label="Toggle theme"
-              className="inline-flex h-9 w-9 items-center justify-center rounded-md border border-border text-muted-foreground transition-colors hover:text-foreground"
+              className="text-muted-foreground transition-colors hover:text-foreground"
             >
-              {theme === "dark" ? (
-                <Sun className="h-4 w-4" />
-              ) : (
-                <Moon className="h-4 w-4" />
-              )}
-            </button>
+              <AnimatePresence mode="wait" initial={false}>
+                <motion.span
+                  key={theme}
+                  initial={{ opacity: 0, rotate: reduceMotion ? 0 : -70, scale: 0.7 }}
+                  animate={{ opacity: 1, rotate: 0, scale: 1 }}
+                  exit={{ opacity: 0, rotate: reduceMotion ? 0 : 70, scale: 0.7 }}
+                  transition={{ duration: reduceMotion ? 0 : 0.2 }}
+                  className="inline-flex"
+                >
+                  {theme === "dark" ? (
+                    <Sun className="h-4 w-4" />
+                  ) : (
+                    <Moon className="h-4 w-4" />
+                  )}
+                </motion.span>
+              </AnimatePresence>
+            </Button>
             <button
               onClick={() => setMenuOpen((v) => !v)}
               aria-label="Toggle menu"
@@ -940,12 +1052,14 @@ export default function Portfolio() {
                   }}
                 />
                 <div className="relative h-28 w-28 overflow-hidden rounded-full border border-border bg-background ring-2 ring-transparent transition-all duration-300 group-hover:ring-primary/60 sm:h-32 sm:w-32">
-                  <img
-                    src={profileAsset.url}
-                    alt="Aysha Mehek at a waterfall"
-                    className="h-full w-full object-cover"
-                    draggable={false}
-                  />
+                  <PointerTilt>
+                    <img
+                      src={profileAsset.url}
+                      alt="Aysha Mehek at a waterfall"
+                      className="h-full w-full object-cover"
+                      draggable={false}
+                    />
+                  </PointerTilt>
                 </div>
               </motion.div>
               <div className="min-w-0">
@@ -996,7 +1110,7 @@ export default function Portfolio() {
 
               <div className="mx-1 hidden h-6 w-px bg-border sm:block" />
 
-              <motion.div whileHover={{ y: -3 }} whileTap={{ scale: 0.97 }}>
+              <MagneticButton>
                 <Button
                   asChild
                   size="sm"
@@ -1012,16 +1126,16 @@ export default function Portfolio() {
                     Resume
                   </a>
                 </Button>
-              </motion.div>
+              </MagneticButton>
 
-              <motion.div whileHover={{ y: -3 }} whileTap={{ scale: 0.97 }}>
+              <MagneticButton>
                 <Button asChild size="sm" variant="outline" className="gap-1.5">
                   <a href="#contact">
                     <Sparkles className="h-4 w-4" />
                     Get in touch
                   </a>
                 </Button>
-              </motion.div>
+              </MagneticButton>
             </div>
           </Reveal>
         </section>
@@ -1218,8 +1332,25 @@ function ExperienceCard({
   period: string;
   bullets: string[];
 }) {
+  const reduceMotion = useReducedMotion();
+  const bulletVariants = {
+    rest: { x: 0 },
+    active: { x: 3, transition: { duration: 0.18 } },
+  };
+  const dotVariants = {
+    rest: { scale: 1, opacity: 0.65 },
+    active: { scale: 1.7, opacity: 1, transition: { duration: 0.18 } },
+  };
+
   return (
-    <div className="rounded-xl border border-border bg-card p-5 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_8px_30px_-12px_rgb(0_0_0/0.15)]">
+    <motion.article
+      tabIndex={0}
+      aria-label={`${role} at ${company}`}
+      initial="rest"
+      whileHover={reduceMotion ? undefined : "active"}
+      whileFocus={reduceMotion ? undefined : "active"}
+      className="rounded-xl border border-border bg-card p-5 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_8px_30px_-12px_rgb(0_0_0/0.15)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+    >
       <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
         <div className="min-w-0">
           <h3 className="text-base font-semibold tracking-tight">{role}</h3>
@@ -1232,13 +1363,21 @@ function ExperienceCard({
         </span>
       </div>
       <ul className="mt-4 space-y-2 text-[14.5px] leading-relaxed text-foreground/80">
-        {bullets.map((b) => (
-          <li key={b} className="flex gap-2">
-            <span className="mt-2 inline-block h-1 w-1 shrink-0 rounded-full bg-primary/60" />
+        {bullets.map((b, index) => (
+          <motion.li
+            key={b}
+            variants={bulletVariants}
+            transition={{ delay: reduceMotion ? 0 : index * 0.035 }}
+            className="flex gap-2"
+          >
+            <motion.span
+              variants={dotVariants}
+              className="mt-2 inline-block h-1 w-1 shrink-0 rounded-full bg-primary"
+            />
             <span>{b}</span>
-          </li>
+          </motion.li>
         ))}
       </ul>
-    </div>
+    </motion.article>
   );
 }
