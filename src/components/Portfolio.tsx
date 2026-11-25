@@ -1063,6 +1063,13 @@ export default function Portfolio() {
                 </div>
               </motion.div>
               <div className="min-w-0">
+                <p className="mb-2 inline-flex items-center gap-2 rounded-full border border-border bg-background/70 px-2.5 py-1 text-[11px] font-medium text-muted-foreground backdrop-blur-sm">
+                  <span
+                    aria-hidden
+                    className="h-1.5 w-1.5 rounded-full bg-primary/70"
+                  />
+                  BCA graduate <span className="text-primary/60">·</span> Data Science Intern
+                </p>
                 <h1 className="font-display whitespace-nowrap text-5xl leading-[0.95] sm:text-6xl">
                   Aysha <em className="text-primary">Mehek</em>
                 </h1>
@@ -1129,10 +1136,14 @@ export default function Portfolio() {
               </MagneticButton>
 
               <MagneticButton>
-                <Button asChild size="sm" variant="outline" className="gap-1.5">
+                <Button asChild size="sm" variant="outline" className="group gap-1.5">
                   <a href="#contact">
                     <Sparkles className="h-4 w-4" />
                     Get in touch
+                    <ArrowUpRight
+                      aria-hidden
+                      className="h-3.5 w-3.5 transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-focus-visible:translate-x-0.5 group-focus-visible:-translate-y-0.5 motion-reduce:transition-none"
+                    />
                   </a>
                 </Button>
               </MagneticButton>
