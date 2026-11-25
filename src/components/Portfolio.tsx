@@ -1026,13 +1026,14 @@ export default function Portfolio() {
             <div className="flex flex-col items-start gap-6 sm:flex-row sm:items-center">
               <motion.div
                 drag
-                dragConstraints={{ left: -40, right: 40, top: -20, bottom: 20 }}
-                dragElastic={0.4}
-                dragTransition={{ bounceStiffness: 300, bounceDamping: 20 }}
+                dragMomentum={false}
+                dragSnapToOrigin
+                dragTransition={{ bounceStiffness: 320, bounceDamping: 24 }}
                 whileHover={{ scale: 1.05 }}
+                whileDrag={{ scale: 1.06 }}
                 whileTap={{ scale: 0.98, cursor: "grabbing" }}
                 transition={{ type: "spring", stiffness: 260, damping: 20 }}
-                className="group relative shrink-0 cursor-grab animate-float"
+                className="group relative z-10 shrink-0 cursor-grab touch-none active:cursor-grabbing"
                 title="Drag me"
               >
                 <div
