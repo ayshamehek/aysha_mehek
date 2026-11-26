@@ -4,7 +4,9 @@ import {
   motion,
   useReducedMotion,
   useMotionValue,
+  useMotionTemplate,
   useSpring,
+  useTransform,
   AnimatePresence,
   type PanInfo,
 } from "framer-motion";
@@ -435,6 +437,77 @@ function PointerTilt({ children }: { children: React.ReactNode }) {
     >
       {children}
     </motion.div>
+  );
+}
+
+function AnchoredProfilePhoto() {
+  const x = useMotionValue(0);
+  const y = useMotionValue(0);
+  const tetherX = useTransform(x, (value) => 108 + value);
+  const tetherY = useTransform(y, (value) => 16 + value);
+  const tetherPath = useMotionTemplate`M 128 4 C 123 10, ${tetherX} 6, ${tetherX} ${tetherY}`;
+
+  return (
+    <div className="relative h-28 w-28 shrink-0 sm:h-32 sm:w-32" title="Drag me">
+      <motion.svg
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0 z-0 h-full w-full overflow-visible text-primary/75"
+        viewBox="0 0 128 128"
+        preserveAspectRatio="none"
+      >
+        <motion.path
+          d={tetherPath}
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1.35"
+          strokeLinecap="round"
+        />
+      </motion.svg>
+      <MapPin
+        aria-hidden="true"
+        className="pointer-events-none absolute -right-2 -top-3 z-20 h-4 w-4 fill-background text-primary drop-shadow-sm"
+        strokeWidth={2.2}
+      />
+      <motion.div
+        drag
+        dragMomentum={false}
+        dragSnapToOrigin
+        dragTransition={{ bounceStiffness: 320, bounceDamping: 24 }}
+        style={{ x, y }}
+        whileHover={{ scale: 1.05 }}
+        whileDrag={{ scale: 1.06 }}
+        whileTap={{ scale: 0.98, cursor: "grabbing" }}
+        transition={{ type: "spring", stiffness: 260, damping: 20 }}
+        className="group absolute inset-0 z-10 cursor-grab touch-none active:cursor-grabbing"
+      >
+        <div
+          aria-hidden="true"
+          className="absolute -inset-6 rounded-full opacity-70 blur-2xl transition-opacity duration-300 group-hover:opacity-100"
+          style={{
+            background:
+              "radial-gradient(closest-side, color-mix(in oklab, var(--primary) 55%, transparent), transparent)",
+          }}
+        />
+        <div
+          aria-hidden="true"
+          className="absolute -inset-[3px] rounded-full opacity-80 animate-gradient"
+          style={{
+            background:
+              "conic-gradient(from 0deg, color-mix(in oklab, var(--primary) 90%, transparent), transparent 35%, color-mix(in oklab, var(--primary) 70%, transparent) 70%, transparent)",
+          }}
+        />
+        <div className="relative h-full w-full overflow-hidden rounded-full border border-border bg-background ring-2 ring-transparent transition-all duration-300 group-hover:ring-primary/60">
+          <PointerTilt>
+            <img
+              src={profileAsset.url}
+              alt="Aysha Mehek at a waterfall"
+              className="h-full w-full object-cover"
+              draggable={false}
+            />
+          </PointerTilt>
+        </div>
+      </motion.div>
+    </div>
   );
 }
 
@@ -1024,45 +1097,7 @@ export default function Portfolio() {
           />
           <Reveal>
             <div className="flex flex-col items-start gap-6 sm:flex-row sm:items-center">
-              <motion.div
-                drag
-                dragMomentum={false}
-                dragSnapToOrigin
-                dragTransition={{ bounceStiffness: 320, bounceDamping: 24 }}
-                whileHover={{ scale: 1.05 }}
-                whileDrag={{ scale: 1.06 }}
-                whileTap={{ scale: 0.98, cursor: "grabbing" }}
-                transition={{ type: "spring", stiffness: 260, damping: 20 }}
-                className="group relative z-10 shrink-0 cursor-grab touch-none active:cursor-grabbing"
-                title="Drag me"
-              >
-                <div
-                  aria-hidden
-                  className="absolute -inset-6 rounded-full opacity-70 blur-2xl transition-opacity duration-300 group-hover:opacity-100"
-                  style={{
-                    background:
-                      "radial-gradient(closest-side, color-mix(in oklab, var(--primary) 55%, transparent), transparent)",
-                  }}
-                />
-                <div
-                  aria-hidden
-                  className="absolute -inset-[3px] rounded-full opacity-80 animate-gradient"
-                  style={{
-                    background:
-                      "conic-gradient(from 0deg, color-mix(in oklab, var(--primary) 90%, transparent), transparent 35%, color-mix(in oklab, var(--primary) 70%, transparent) 70%, transparent)",
-                  }}
-                />
-                <div className="relative h-28 w-28 overflow-hidden rounded-full border border-border bg-background ring-2 ring-transparent transition-all duration-300 group-hover:ring-primary/60 sm:h-32 sm:w-32">
-                  <PointerTilt>
-                    <img
-                      src={profileAsset.url}
-                      alt="Aysha Mehek at a waterfall"
-                      className="h-full w-full object-cover"
-                      draggable={false}
-                    />
-                  </PointerTilt>
-                </div>
-              </motion.div>
+              <AnchoredProfilePhoto />
               <div className="min-w-0">
                 <p className="mb-2 inline-flex items-center gap-2 rounded-full border border-border bg-background/70 px-2.5 py-1 text-[11px] font-medium text-muted-foreground backdrop-blur-sm">
                   <span
