@@ -710,7 +710,7 @@ function StackedProjectCard({
         setSpot({ x: event.clientX - rect.left, y: event.clientY - rect.top });
       }}
       onPointerLeave={() => setSpot(null)}
-      className={`relative isolate flex h-full flex-col overflow-hidden rounded-2xl border border-border bg-card p-6 shadow-[0_20px_60px_-30px_rgb(0_0_0/0.25)] transition-colors ${
+      className={`relative isolate flex h-full flex-col overflow-hidden rounded-2xl border border-border bg-card px-6 pt-6 pb-8 shadow-[0_20px_60px_-30px_rgb(0_0_0/0.25)] transition-colors ${
         isTop ? "cursor-grab active:cursor-grabbing" : "pointer-events-none"
       }`}
     >
